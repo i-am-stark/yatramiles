@@ -6,9 +6,22 @@ const {
   getPackageById,
   updatePackage,
   deletePackage,
+  searchPackages,
 } = require('../controllers/packageController');
 
+const upload = require('../middleware/uploadMiddleware');
 const router = express.Router();
+router.post(
+  '/',
+  protect,
+  authorize('Owner', 'Staff'),
+  upload.array('media', 10), // Allow up to 10 files
+  createPackage
+);
+
+
+
+router.get('/search', searchPackages); // To search and filter
 
 // Create a Package (Owner/Staff Only)
 router.post('/', protect, authorize('Owner', 'Staff'), createPackage);

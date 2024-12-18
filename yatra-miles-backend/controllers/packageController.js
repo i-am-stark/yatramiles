@@ -3,12 +3,9 @@ const Package = require('../models/Package');
 // Create a Package
 exports.createPackage = async (req, res) => {
   try {
-    const { name, description, price, duration, locations, media } = req.body;
+    const { name, description, price, duration, locations } = req.body;
 
-    // Validate required fields
-    if (!name || !description || !price || !duration || !locations) {
-      return res.status(400).json({ message: 'Please provide all required fields' });
-    }
+    const media = req.files.map((file) => file.path); // Get file paths
 
     const newPackage = await Package.create({
       name,
@@ -17,7 +14,7 @@ exports.createPackage = async (req, res) => {
       duration,
       locations,
       media,
-      createdBy: req.user.id, // Get the logged-in user
+      createdBy: req.user.id,
     });
 
     res.status(201).json(newPackage);
@@ -92,5 +89,41 @@ exports.deletePackage = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error deleting package', error: error.message });
+  }
+};
+
+exports.searchPackages = async (req, res) => {
+  try {
+    const { search, minPrice, maxPrice, minDuration, maxDuration } = req.query;
+
+    const query = {};
+
+    // Search by name or destination
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: 'i' } }, // Case-insensitive search in name
+        { locations: { $regex: search, $options: 'i' } }, // Case-insensitive search in locations
+      ];
+    }
+
+    // Filter by price range
+    if (minPrice || maxPrice) {
+      query.price = {};
+      if (minPrice) query.price.$gte = parseFloat(minPrice);
+      if (maxPrice) query.price.$lte = parseFloat(maxPrice);
+    }
+
+    // Filter by duration
+    if (minDuration || maxDuration) {
+      query.duration = {};
+      if (minDuration) query.duration.$gte = parseFloat(minDuration);
+      if (maxDuration) query.duration.$lte = parseFloat(maxDuration);
+    }
+
+    const packages = await Package.find(query);
+    res.status(200).json(packages);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error fetching packages', error: error.message });
   }
 };

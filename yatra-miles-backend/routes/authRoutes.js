@@ -13,4 +13,9 @@ router.post('/login', loginUser);
 // Create Staff Account (Owner Only)
 router.post('/create-staff', protect, authorize('Owner'), createStaff);
 
+// Log Out
+router.post('/logout', protect, (req, res) => {
+    res.status(200).json({ message: 'Logged out successfully' });
+  });
+
 module.exports = router;

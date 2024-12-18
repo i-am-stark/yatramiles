@@ -9,12 +9,12 @@ const {
 const router = express.Router();
 
 // Create a Transaction (Staff Only)
-router.post('/', protect, authorize('Staff'), createTransaction);
+router.post('/', protect, authorize('Staff', 'Owner'), createTransaction);
 
-// Get All Transactions (Owner: All, Staff: Own Created, Customer: Own Transactions)
+// Get All Transactions (Customer: Own, Staff: Own Created, Owner: All)
 router.get('/', protect, getTransactions);
 
 // Update Transaction Status (Staff Only)
-router.put('/:id', protect, authorize('Staff'), updateTransactionStatus);
+router.put('/:id', protect, authorize('Staff', 'Owner'), updateTransactionStatus);
 
 module.exports = router;

@@ -110,17 +110,17 @@ const createStaff = async (req, res) => {
     }
 
     // Hash the password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    // const salt = await bcrypt.genSalt(10);
+    // const hashedPassword = await bcrypt.hash(password, salt);
 
-    console.log('Raw password (create-staff):', password); // Debug
-    console.log('Hashed password (create-staff):', hashedPassword); // Debug
+    // console.log('Raw password (create-staff):', password); // Debug
+    // console.log('Hashed password (create-staff):', hashedPassword); // Debug
 
     // Create a new staff user
     const staff = new User({
       name,
       email,
-      password: hashedPassword,
+      password,
       role: 'Staff',
     });
 

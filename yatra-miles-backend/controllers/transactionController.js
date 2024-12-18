@@ -1,13 +1,12 @@
 const Transaction = require('../models/Transaction');
 const User = require('../models/User');
 const Package = require('../models/Package');
+const sendEmail = require('../utils/sendEmail');
 
-// Create a Transaction (Staff Only)
+// Create Transaction by Staff or Owner
 exports.createTransaction = async (req, res) => {
   try {
     const { customerId, packageId, status } = req.body;
-
-    // Fetch customer and package details
     const customer = await User.findById(customerId);
     const travelPackage = await Package.findById(packageId);
 
@@ -17,10 +16,17 @@ exports.createTransaction = async (req, res) => {
 
     const newTransaction = await Transaction.create({
       customer: { id: customer._id, name: customer.name },
-      staff: { id: req.user._id, name: req.user.name }, // Logged-in staff
+      staff: { id: req.user._id, name: req.user.name },
       package: { id: travelPackage._id, name: travelPackage.name },
       status: status || 'Initiated',
     });
+
+    // // Send email notification
+    // await sendEmail(
+    //   customer.email,
+    //   'Transaction Created',
+    //   `Dear ${customer.name}, your transaction for the package "${travelPackage.name}" has been created. Status: ${status || 'Initiated'}.`
+    // );
 
     res.status(201).json(newTransaction);
   } catch (error) {
@@ -28,6 +34,8 @@ exports.createTransaction = async (req, res) => {
     res.status(500).json({ message: 'Error creating transaction', error: error.message });
   }
 };
+
+
 
 // Get All Transactions
 exports.getTransactions = async (req, res) => {
@@ -54,6 +62,7 @@ exports.getTransactions = async (req, res) => {
   }
 };
 
+
 // Update Transaction Status (Staff Only)
 exports.updateTransactionStatus = async (req, res) => {
   try {
@@ -62,7 +71,7 @@ exports.updateTransactionStatus = async (req, res) => {
     const updatedTransaction = await Transaction.findByIdAndUpdate(
       req.params.id,
       { status },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true } // Return updated document and validate status
     );
 
     if (!updatedTransaction) {
@@ -75,3 +84,4 @@ exports.updateTransactionStatus = async (req, res) => {
     res.status(500).json({ message: 'Error updating transaction', error: error.message });
   }
 };
+
