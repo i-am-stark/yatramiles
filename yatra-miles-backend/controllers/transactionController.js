@@ -7,6 +7,7 @@ const sendEmail = require('../utils/sendEmail');
 exports.createTransaction = async (req, res) => {
   try {
     const { customerId, packageId, status } = req.body;
+
     const customer = await User.findById(customerId);
     const travelPackage = await Package.findById(packageId);
 
@@ -14,6 +15,7 @@ exports.createTransaction = async (req, res) => {
       return res.status(404).json({ message: 'Customer or Package not found' });
     }
 
+    // Create transaction with nested objects for customer, staff, and package
     const newTransaction = await Transaction.create({
       customer: { id: customer._id, name: customer.name },
       staff: { id: req.user._id, name: req.user.name },
@@ -21,12 +23,12 @@ exports.createTransaction = async (req, res) => {
       status: status || 'Initiated',
     });
 
-    // // Send email notification
-    // await sendEmail(
-    //   customer.email,
-    //   'Transaction Created',
-    //   `Dear ${customer.name}, your transaction for the package "${travelPackage.name}" has been created. Status: ${status || 'Initiated'}.`
-    // );
+    // Send email notification to the customer
+    await sendEmail(
+      customer.email,
+      'Transaction Created',
+      `Dear ${customer.name}, your transaction for the package "${travelPackage.name}" has been created. Status: ${status || 'Initiated'}.`
+    );
 
     res.status(201).json(newTransaction);
   } catch (error) {
@@ -37,30 +39,34 @@ exports.createTransaction = async (req, res) => {
 
 
 
+
 // Get All Transactions
 exports.getTransactions = async (req, res) => {
   try {
+    const { role, id } = req.user;
+
     let transactions;
 
-    if (req.user.role === 'Owner') {
-      // Owner: See all transactions
+    if (role === 'Customer') {
+      // Fetch transactions for the logged-in customer
+      transactions = await Transaction.find({ 'customer.id': id });
+    } else if (role === 'Staff') {
+      // Fetch transactions created by the logged-in staff
+      transactions = await Transaction.find({ 'staff.id': id });
+    } else if (role === 'Owner') {
+      // Fetch all transactions for the owner
       transactions = await Transaction.find();
-    } else if (req.user.role === 'Staff') {
-      // Staff: See transactions they created
-      transactions = await Transaction.find({ 'staff.id': req.user._id });
-    } else if (req.user.role === 'Customer') {
-      // Customer: See their own transactions
-      transactions = await Transaction.find({ 'customer.id': req.user._id });
     } else {
-      return res.status(403).json({ message: 'Access denied' });
+      return res.status(403).json({ message: 'Unauthorized' });
     }
 
     res.status(200).json(transactions);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error fetching transactions', error: error.message });
+    console.error('Error fetching transactions:', error.message);
+    res.status(500).json({ message: 'Failed to fetch transactions', error: error.message });
   }
 };
+
 
 
 // Update Transaction Status (Staff Only)
