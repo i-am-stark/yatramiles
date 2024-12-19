@@ -3,31 +3,20 @@ const bcrypt = require('bcryptjs');
 
 const UserSchema = new mongoose.Schema(
     {
-        name: {
-            type: String,
-            required: true,
-        },
-        email: {
-            type: String,
-            required: true,
-            unique: true,
-        },
-        password: {
-            type: String,
-            required: true,
-        },
-        role: {
-            type: String,
-            enum: ['Owner', 'Staff', 'Customer'],
-            default: 'Customer',
-        },
-        contact: {
-            phone: String,
-            address: String,
-        },
+      name: { type: String, required: true },
+      email: { type: String, required: true, unique: true },
+      password: { type: String, required: true },
+      role: {
+        type: String,
+        enum: ['Owner', 'Staff', 'Customer'],
+        default: 'Customer',
+      },
+      isVerified: { type: Boolean, default: false }, // Email verification status
+      otp: { type: String }, // OTP sent to the user
+      otpExpiresAt: { type: Date }, // Expiration time for the OTP
     },
     { timestamps: true }
-);
+  );
 
 // Hash password before saving
 UserSchema.pre('save', async function (next) {

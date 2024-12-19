@@ -1,56 +1,52 @@
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+const sendEmail = require('../utils/sendEmail');
 
 // Register a Customer
 const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    // Validate required fields
-    if (!name || !email || !password) {
-      return res.status(400).json({ message: 'Please provide all required fields' });
-    }
-
-    // Check if user already exists
     const userExists = await User.findOne({ email });
     if (userExists) {
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    // Hash the password
-    // const salt = await bcrypt.genSalt(10);
-    // const hashedPassword = await bcrypt.hash(password, salt);
+    const otp = crypto.randomInt(100000, 999999).toString();
+    const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
-    // console.log('Raw password (register):', password); // Debug
-    // console.log('Hashed password (register):', hashedPassword); // Debug
-
-    // Create the user with default "Customer" role
-    const newUser = new User({
+    const newUser = await User.create({
       name,
       email,
       password,
-      role: 'Customer', // Default role for registration
+      role: 'Customer',
+      otp,
+      otpExpiresAt,
+      isVerified: false,
     });
 
-    await newUser.save();
+    await sendEmail(
+      email,
+      'Verify Your Email - YatraMiles',
+      `Dear ${name},\n\nYour OTP for YatraMiles registration is ${otp}. It is valid for 10 minutes.\n\nThank you!`
+    );
 
-    res.status(201).json({ message: 'Customer registered successfully' });
+    res.status(201).json({
+      message: 'Registration initiated. Please verify your email using the OTP sent to your email address.',
+    });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Server error', error: error.message });
+    res.status(500).json({ message: 'Error during registration', error: error.message });
   }
 };
+
 
 // Login
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-
-    // Validate required fields
-    if (!email || !password) {
-      return res.status(400).json({ message: 'Please provide email and password' });
-    }
 
     // Check if user exists
     const user = await User.findOne({ email });
@@ -58,14 +54,13 @@ const loginUser = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // console.log('Password entered (login):', password); // Debug
-    // console.log('Hashed password (login):', user.password); // Debug
+    // Check if user is verified
+    if (!user.isVerified) {
+      return res.status(403).json({ message: 'Please verify your email before logging in.' });
+    }
 
-    // Verify password
+    // Validate password
     const isMatch = await bcrypt.compare(password, user.password);
-
-    // const isMatch = password == user.password;
-    // console.log('Password match result:', isMatch); // Debug
     if (!isMatch) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
@@ -80,18 +75,42 @@ const loginUser = async (req, res) => {
     res.status(200).json({
       message: 'Login successful',
       token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Server error', error: error.message });
+    res.status(500).json({ message: 'Error during login', error: error.message });
   }
 };
+
+//OTP Verification
+const verifyOtp = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    // Check if user exists
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Check if OTP matches and is not expired
+    if (user.otp !== otp || user.otpExpiresAt < Date.now()) {
+      return res.status(400).json({ message: 'Invalid or expired OTP' });
+    }
+
+    // Mark the user as verified
+    user.isVerified = true;
+    user.otp = undefined; // Clear OTP
+    user.otpExpiresAt = undefined; // Clear OTP expiry
+    await user.save();
+
+    res.status(200).json({ message: 'OTP verified successfully. Your account is now active.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error during OTP verification', error: error.message });
+  }
+};
+
 
 // Create Staff Account (Owner Only)
 const createStaff = async (req, res) => {
@@ -108,13 +127,6 @@ const createStaff = async (req, res) => {
     if (existingUser) {
       return res.status(400).json({ message: 'User already exists' });
     }
-
-    // Hash the password
-    // const salt = await bcrypt.genSalt(10);
-    // const hashedPassword = await bcrypt.hash(password, salt);
-
-    // console.log('Raw password (create-staff):', password); // Debug
-    // console.log('Hashed password (create-staff):', hashedPassword); // Debug
 
     // Create a new staff user
     const staff = new User({
@@ -137,4 +149,5 @@ module.exports = {
   registerUser,
   loginUser,
   createStaff,
+  verifyOtp,
 };
