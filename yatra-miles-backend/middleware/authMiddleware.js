@@ -9,35 +9,36 @@ const protect = async (req, res, next) => {
     req.headers.authorization.startsWith('Bearer')
   ) {
     try {
-      // Extract the token
       token = req.headers.authorization.split(' ')[1];
-      console.log('Extracted Token:', token); // Debug
 
-      // Verify the token
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      console.log('Decoded Token:', decoded); // Debug
+      const user = await User.findById(decoded.id);
 
-      // Attach user info to the request
-      req.user = await User.findById(decoded.id).select('-password');
-      console.log('User found in database:', req.user); // Debug
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      // Ensure user is verified
+      if (!user.isVerified) {
+        return res.status(403).json({ message: 'Account is not verified. Please verify your email.' });
+      }
+
+      req.user = user; // Attach the user to the request object
       next();
     } catch (error) {
-      console.error('JWT Verification Error:', error.message);
-      return res.status(401).json({ message: 'Not authorized', error: error.message });
+      return res.status(401).json({ message: 'Not authorized, token failed' });
     }
   }
 
   if (!token) {
-    console.log('No token provided');
-    return res.status(401).json({ message: 'Not authorized, no token' });
+    return res.status(401).json({ message: 'No token provided' });
   }
 };
 
 const authorize = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
-      console.log('Access denied for role:', req.user.role); // Debug
-      return res.status(403).json({ message: 'Access denied' });
+      return res.status(403).json({ message: 'Not authorized for this action' });
     }
     next();
   };

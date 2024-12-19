@@ -1,5 +1,5 @@
 const express = require('express');
-const { registerUser, loginUser, createStaff, verifyOtp } = require('../controllers/authController');
+const { registerUser, loginUser, createStaff, verifyOtp, resendOtp } = require('../controllers/authController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 
 const router = express.Router();
@@ -12,6 +12,9 @@ router.post('/login', loginUser);
 
 // OTP verification route
 router.post('/verify-otp', verifyOtp); 
+
+// Resend OTP
+router.post('/resend-otp', resendOtp);
 
 // Create Staff Account (Owner Only)
 router.post('/create-staff', protect, authorize('Owner'), createStaff);

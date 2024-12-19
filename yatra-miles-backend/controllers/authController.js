@@ -43,6 +43,45 @@ const registerUser = async (req, res) => {
 };
 
 
+// Resend OTP for Verification
+const resendOtp = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // Check if user exists
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Check if the user is already verified
+    if (user.isVerified) {
+      return res.status(400).json({ message: 'User is already verified.' });
+    }
+
+    // Generate a new OTP
+    const otp = crypto.randomInt(100000, 999999).toString();
+    const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes validity
+
+    // Update user with new OTP and expiration time
+    user.otp = otp;
+    user.otpExpiresAt = otpExpiresAt;
+    await user.save();
+
+    // Send the OTP via email
+    await sendEmail(
+      email,
+      'Your New OTP - YatraMiles',
+      `Dear ${user.name},\n\nYour new OTP for YatraMiles registration is ${otp}. It is valid for 10 minutes.\n\nThank you!`
+    );
+
+    res.status(200).json({ message: 'A new OTP has been sent to your email.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error resending OTP', error: error.message });
+  }
+};
+
 // Login
 const loginUser = async (req, res) => {
   try {
@@ -113,6 +152,7 @@ const verifyOtp = async (req, res) => {
 
 
 // Create Staff Account (Owner Only)
+
 const createStaff = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -134,6 +174,7 @@ const createStaff = async (req, res) => {
       email,
       password,
       role: 'Staff',
+      isVerified: true,
     });
 
     await staff.save();
@@ -145,9 +186,11 @@ const createStaff = async (req, res) => {
   }
 };
 
+
 module.exports = {
   registerUser,
   loginUser,
   createStaff,
   verifyOtp,
+  resendOtp,
 };
