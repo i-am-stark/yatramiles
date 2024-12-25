@@ -25,6 +25,3 @@ ehthumbs.db
 build/
 dist/
 coverage/
-
-# Yarn lock file (if using Yarn instead of npm)
-yarn.lock

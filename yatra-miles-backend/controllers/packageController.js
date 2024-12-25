@@ -3,26 +3,31 @@ const Package = require('../models/Package');
 // Create a Package
 exports.createPackage = async (req, res) => {
   try {
-    const { name, description, price, duration, locations } = req.body;
+    const { name, description, price, duration } = req.body;
 
-    const media = req.files.map((file) => file.path); // Get file paths
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ message: 'Please upload at least one image' });
+    }
 
-    const newPackage = await Package.create({
+    const imagePaths = req.files.map((file) => file.path); // Collect image paths
+
+    const newPackage = new Package({
       name,
       description,
       price,
       duration,
-      locations,
-      media,
-      createdBy: req.user.id,
+      images: imagePaths,
     });
 
-    res.status(201).json(newPackage);
+    await newPackage.save();
+    res.status(201).json({ message: 'Package created successfully', package: newPackage });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error creating package', error: error.message });
+    res.status(500).json({ message: 'Failed to create package' });
   }
 };
+
+
 
 // Get All Packages
 exports.getPackages = async (req, res) => {

@@ -21,3 +21,6 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Yarn lock file (if using Yarn instead of npm)
+yarn.lock
