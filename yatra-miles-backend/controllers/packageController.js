@@ -33,12 +33,17 @@ exports.createPackage = async (req, res) => {
 exports.getPackages = async (req, res) => {
   try {
     const packages = await Package.find();
-    res.status(200).json(packages);
+    const packagesWithFullImages = packages.map((pkg) => ({
+      ...pkg.toObject(),
+      images: pkg.images.map((img) => `http://localhost:5001/${img}`), // Adjust URL
+    }));
+    res.status(200).json(packagesWithFullImages);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error fetching packages', error: error.message });
   }
 };
+
 
 // Get Package by ID
 exports.getPackageById = async (req, res) => {
@@ -103,11 +108,11 @@ exports.searchPackages = async (req, res) => {
 
     const query = {};
 
-    // Search by name or destination
+    // Case-insensitive search by name or description
     if (search) {
       query.$or = [
-        { name: { $regex: search, $options: 'i' } }, // Case-insensitive search in name
-        { locations: { $regex: search, $options: 'i' } }, // Case-insensitive search in locations
+        { name: { $regex: search, $options: 'i' } }, // Case-insensitive regex for name
+        { description: { $regex: search, $options: 'i' } }, // Case-insensitive regex for description
       ];
     }
 
@@ -132,3 +137,4 @@ exports.searchPackages = async (req, res) => {
     res.status(500).json({ message: 'Error fetching packages', error: error.message });
   }
 };
+

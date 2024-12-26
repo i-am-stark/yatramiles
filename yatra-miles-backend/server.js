@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');
+const path = require('path'); // Add this line at the top
 const authRoutes = require('./routes/authRoutes'); // Import authentication routes
 
 const app = express();
@@ -40,7 +41,7 @@ app.use('/api/dashboard', dashboardRoutes);
 const profileRoutes = require('./routes/profileRoutes');
 app.use('/api/profile', profileRoutes);
 
-
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Start the server
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

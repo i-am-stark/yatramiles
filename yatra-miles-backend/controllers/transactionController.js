@@ -37,6 +37,21 @@ exports.createTransaction = async (req, res) => {
   }
 };
 
+exports.getTransactionById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const transaction = await Transaction.findById(id);
+
+    if (!transaction) {
+      return res.status(404).json({ message: 'Transaction not found' });
+    }
+
+    res.status(200).json(transaction);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error fetching transaction', error: error.message });
+  }
+};
 
 
 
