@@ -14,10 +14,13 @@ import PrivateRoute from './components/PrivateRoute';
 import ManagePackages from './pages/ManagePackages';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import OwnerTransactions from './pages/OwnerTransactions';
+import AllTransactionsPage from './pages/AllTransactionsPage';
+import CreateTransactionPage from './pages/CreateTransactionPage';
+import EditTransactionPage from './pages/EditTransactionPage';
 import CustomerTransactions from './pages/CustomerTransactions';
-import StaffTransactions from './pages/StaffTransactions';
-import { UserProvider } from './context/UserContext'; // Wrap the app
+import StaffTransactionsPage from './pages/StaffTransactionsPage';
+import { UserProvider } from './context/UserContext'; 
+import AllPackages from './pages/AllPackages'; 
 
 const App = () => {
   return (
@@ -32,14 +35,8 @@ const App = () => {
             <Route path="/faq" element={<FAQ />} /> {/* Add FAQ Route */}
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
-            <Route
-              path="/owner-transactions"
-              element={
-                <PrivateRoute>
-                  <OwnerTransactions />
-                </PrivateRoute>
-              }
-            />
+            <Route path="/packages" element={<AllPackages />} />
+            
             <Route
               path="/customer-transactions"
               element={
@@ -48,14 +45,10 @@ const App = () => {
                 </PrivateRoute>
               }
             />
-            <Route
-              path="/staff-transactions"
-              element={
-                <PrivateRoute>
-                  <StaffTransactions />
-                </PrivateRoute>
-              }
-            />
+            <Route path="/owner-transactions" element={<AllTransactionsPage />} />
+            <Route path="/staff-transactions" element={<StaffTransactionsPage />} />
+            <Route path="/transactions/new" element={<CreateTransactionPage />} />
+            <Route path="/transactions/edit/:transactionId" element={<EditTransactionPage />} />
             <Route
               path="/owner-dashboard"
               element={

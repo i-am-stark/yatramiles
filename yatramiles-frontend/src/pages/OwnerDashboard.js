@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import './../css/OwnerDashboard.css'; // Ensure you have a CSS file for styling
+import { toast } from 'react-toastify';
+import { Package, Trash2, Edit, Plus, DollarSign, Clock, AlertCircle, Loader } from 'lucide-react';
+import './../css/OwnerDashboard.css';
 
 const OwnerDashboard = () => {
   const [packages, setPackages] = useState([]);
@@ -9,95 +11,133 @@ const OwnerDashboard = () => {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const fetchPackages = async () => {
-      try {
-        const token = localStorage.getItem('token'); // Get token from local storage
-        const response = await axios.get('http://localhost:5001/api/packages', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setPackages(response.data);
-      } catch (err) {
-        setError(err.response?.data?.message || 'Failed to fetch packages');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchPackages();
   }, []);
 
-  return (
-    <div className="owner-dashboard">
-      <h1>Owner Dashboard</h1>
-      <p>Manage your packages and track performance.</p>
+  const fetchPackages = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get('http://localhost:5001/api/packages', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setPackages(response.data);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to fetch packages');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-      <div className="dashboard-actions">
-        <Link to="/manage-packages" className="action-button">
+  const handleDelete = async (id) => {
+    if (window.confirm('Are you sure you want to delete this package?')) {
+      try {
+        const token = localStorage.getItem('token');
+        await axios.delete(`http://localhost:5001/api/packages/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setPackages(packages.filter((pkg) => pkg._id !== id));
+        toast.success('Package deleted successfully');
+      } catch (error) {
+        toast.error('Failed to delete package');
+      }
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="loading-state">
+        <Loader className="spin" size={40} />
+        <p>Loading packages...</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="dashboard-container">
+      <div className="dashboard-header">
+        <div className="header-content">
+          <h1>Owner Dashboard</h1>
+          <p>Manage your travel packages and monitor performance</p>
+        </div>
+        <Link to="/manage-packages" className="add-package-button">
+          <Plus size={20} />
           Add New Package
+        </Link>
+        <Link to="/owner-transactions" className="view-transactions-button">
+          View All Transactions
         </Link>
       </div>
 
-      {loading ? (
-        <p>Loading packages...</p>
-      ) : error ? (
-        <p className="error">{error}</p>
-      ) : packages.length > 0 ? (
-        <table className="packages-table">
-          <thead>
-            <tr>
-              <th>Package Name</th>
-              <th>Total Bookings</th>
-              <th>Revenue</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {packages.map((pkg) => (
-              <tr key={pkg._id}>
-                <td>{pkg.name}</td>
-                <td>{pkg.bookings || 0}</td>
-                <td>${pkg.revenue || 0}</td>
-                <td>{pkg.status}</td>
-                <td>
-                  <Link to={`/packages/edit/${pkg._id}`} className="edit-button">
-                    Edit
-                  </Link>
-                  <button
-                    className="delete-button"
-                    onClick={() => handleDelete(pkg._id)}
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      {error ? (
+        <div className="error-message">
+          <AlertCircle size={20} />
+          <span>{error}</span>
+        </div>
+      ) : packages.length === 0 ? (
+        <div className="empty-state">
+          <Package size={48} />
+          <h2>No Packages Found</h2>
+          <p>Start by creating your first travel package</p>
+          <Link to="/manage-packages" className="create-first-button">
+            Create Package
+          </Link>
+        </div>
       ) : (
-        <p>No packages found. Create your first package now!</p>
+        <div className="packages-grid">
+          {packages.map((pkg) => (
+            <div key={pkg._id} className="package-card">
+              {/* Display package image */}
+              {pkg.images && pkg.images.length > 0 ? (
+                <div className="package-image-container">
+                  <img src={`${pkg.images[0]}`} alt={pkg.name} className="package-image" />
+                </div>
+              ) : (
+                <div className="package-image-placeholder">
+                  <Package size={48} />
+                </div>
+              )}
+
+              {/* Package details */}
+              <div className="package-header">
+                <h3>{pkg.name}</h3>
+              </div>
+              
+              <div className="package-details">
+                <div className="detail-item">
+                  <DollarSign size={16} />
+                  <span>${pkg.price}</span>
+                </div>
+                <div className="detail-item">
+                  <Clock size={16} />
+                  <span>{pkg.duration || 'Not specified'}</span>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="package-actions">
+                <Link 
+                  to={`/packages/edit/${pkg._id}`} 
+                  className="edit-button"
+                  title="Edit package"
+                >
+                  <Edit size={16} />
+                  <span>Edit</span>
+                </Link>
+                <button
+                  className="delete-button"
+                  onClick={() => handleDelete(pkg._id)}
+                  title="Delete package"
+                >
+                  <Trash2 size={16} />
+                  <span>Delete</span>
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );
-};
-
-const handleDelete = async (id) => {
-  if (window.confirm('Are you sure you want to delete this package?')) {
-    try {
-      const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:5001/api/packages/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      alert('Package deleted successfully');
-      window.location.reload();
-    } catch (error) {
-      console.error('Failed to delete package:', error);
-    }
-  }
 };
 
 export default OwnerDashboard;

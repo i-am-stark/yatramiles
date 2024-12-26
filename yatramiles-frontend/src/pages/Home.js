@@ -7,7 +7,6 @@ import './../css/home.css';
 const Home = () => {
   const [featuredPackages, setFeaturedPackages] = useState([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [error, setError] = useState('');
 
   const backgroundImages = [
     'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=1200',
@@ -27,10 +26,8 @@ const Home = () => {
       try {
         const response = await axios.get('/api/packages');
         setFeaturedPackages(response.data);
-        setError('');
-      } catch (err) {
-        console.error('Error fetching packages:', err);
-        setError('Failed to load packages. Please try again later.');
+      } catch (error) {
+        console.error('Error fetching packages:', error);
       }
     };
     fetchPackages();
@@ -38,13 +35,9 @@ const Home = () => {
 
   return (
     <div className="home">
-      {/* Hero Section */}
-      <section
-        className="hero-section"
-        style={{
-          backgroundImage: `url(${backgroundImages[currentImageIndex]})`,
-        }}
-      >
+      <section className="hero-section" style={{
+        backgroundImage: `url(${backgroundImages[currentImageIndex]})`,
+      }}>
         <div className="hero-overlay" />
         <div className="hero-content">
           <h1>Discover Your Next Adventure</h1>
@@ -56,26 +49,21 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Featured Packages Section */}
       <section className="featured-section">
         <div className="section-header">
           <h2>Featured Packages</h2>
           <p>Handpicked destinations for your next journey</p>
         </div>
         <div className="featured-grid">
-          {error ? (
-            <div className="error-message">
-              <p>{error}</p>
-            </div>
-          ) : featuredPackages.length > 0 ? (
+          {featuredPackages.length > 0 ? (
             featuredPackages.map((pkg) => (
               <div key={pkg._id} className="package-card">
                 <div className="package-image-container">
-                  <img
-                    src={pkg.imageUrl}
-                    alt={pkg.name}
-                    loading="lazy"
-                  />
+                  {pkg.images?.[0] ? (
+                    <img src={pkg.images[0]} alt={pkg.name} />
+                  ) : (
+                    <div className="placeholder-image">Image Not Available</div>
+                  )}
                   <div className="package-price">${pkg.price || 'Price not available'}</div>
                 </div>
                 <div className="package-details">
@@ -105,7 +93,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Why Choose Us Section */}
       <section className="why-choose-us">
         <div className="section-header">
           <h2>Why Choose Us</h2>
@@ -133,16 +120,6 @@ const Home = () => {
             <h3>24/7 Support</h3>
             <p>Round-the-clock assistance for all your travel needs.</p>
           </div>
-        </div>
-      </section>
-
-      {/* Call to Action Section */}
-      <section className="cta-section">
-        <div className="cta-content">
-          <h2>Ready for Your Next Adventure?</h2>
-          <Link to="/packages" className="cta-button">
-            Explore Packages
-          </Link>
         </div>
       </section>
     </div>
