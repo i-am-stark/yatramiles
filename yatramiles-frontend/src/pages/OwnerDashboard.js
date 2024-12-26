@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { Package, Trash2, Edit, Plus, DollarSign, Clock, AlertCircle, Loader } from 'lucide-react';
+import { Edit, Trash2, Eye, Plus, Loader, AlertCircle, Package, Users, Receipt } from 'lucide-react';
 import './../css/OwnerDashboard.css';
 
 const OwnerDashboard = () => {
@@ -46,96 +46,99 @@ const OwnerDashboard = () => {
   if (loading) {
     return (
       <div className="loading-state">
-        <Loader className="spin" size={40} />
-        <p>Loading packages...</p>
+        <Loader className="loading-spinner" />
+        <p>Loading your dashboard...</p>
       </div>
     );
   }
 
   return (
-    <div className="dashboard-container">
+    <div className="dashboard">
       <div className="dashboard-header">
-        <div className="header-content">
+        <div className="welcome-section">
           <h1>Owner Dashboard</h1>
-          <p>Manage your travel packages and monitor performance</p>
+          <p>Welcome back! Manage your travel packages and business operations.</p>
         </div>
-        <Link to="/manage-packages" className="add-package-button">
-          <Plus size={20} />
-          Add New Package
-        </Link>
-        <Link to="/owner-transactions" className="view-transactions-button">
-          View All Transactions
-        </Link>
+        
+        <div className="quick-actions">
+          <Link to="/manage-packages" className="action-card">
+            <Package size={24} />
+            <span>New Package</span>
+          </Link>
+          <Link to="/owner-transactions" className="action-card">
+            <Receipt size={24} />
+            <span>Transactions</span>
+          </Link>
+          <Link to="/manage-staff" className="action-card">
+            <Users size={24} />
+            <span>Staff</span>
+          </Link>
+        </div>
       </div>
 
-      {error ? (
-        <div className="error-message">
-          <AlertCircle size={20} />
-          <span>{error}</span>
-        </div>
-      ) : packages.length === 0 ? (
-        <div className="empty-state">
-          <Package size={48} />
-          <h2>No Packages Found</h2>
-          <p>Start by creating your first travel package</p>
-          <Link to="/manage-packages" className="create-first-button">
+      <div className="packages-section">
+        <div className="section-header">
+          <h2>Travel Packages</h2>
+          <Link to="/manage-packages" className="new-package-btn">
+            <Plus size={20} />
             Create Package
           </Link>
         </div>
-      ) : (
-        <div className="packages-grid">
-          {packages.map((pkg) => (
-            <div key={pkg._id} className="package-card">
-              {/* Display package image */}
-              {pkg.images && pkg.images.length > 0 ? (
-                <div className="package-image-container">
-                  <img src={`${pkg.images[0]}`} alt={pkg.name} className="package-image" />
-                </div>
-              ) : (
-                <div className="package-image-placeholder">
-                  <Package size={48} />
-                </div>
-              )}
 
-              {/* Package details */}
-              <div className="package-header">
-                <h3>{pkg.name}</h3>
-              </div>
-              
-              <div className="package-details">
-                <div className="detail-item">
-                  <DollarSign size={16} />
-                  <span>${pkg.price}</span>
-                </div>
-                <div className="detail-item">
-                  <Clock size={16} />
-                  <span>{pkg.duration || 'Not specified'}</span>
-                </div>
-              </div>
-
-              {/* Actions */}
-              <div className="package-actions">
-                <Link 
-                  to={`/packages/edit/${pkg._id}`} 
-                  className="edit-button"
-                  title="Edit package"
-                >
-                  <Edit size={16} />
-                  <span>Edit</span>
-                </Link>
-                <button
-                  className="delete-button"
-                  onClick={() => handleDelete(pkg._id)}
-                  title="Delete package"
-                >
-                  <Trash2 size={16} />
-                  <span>Delete</span>
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+        {error ? (
+          <div className="error-message">
+            <AlertCircle size={20} />
+            <span>{error}</span>
+          </div>
+        ) : (
+          <div className="table-container">
+            <table className="packages-table">
+              <thead>
+                <tr>
+                  <th>Package Name</th>
+                  <th>Price</th>
+                  <th>Duration</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {packages.map((pkg) => (
+                  <tr key={pkg._id}>
+                    <td>{pkg.name}</td>
+                    <td>${pkg.price}</td>
+                    <td>{pkg.duration || 'Not specified'}</td>
+                    <td>
+                      <div className="action-buttons">
+                        <Link
+                          to={`/packages/${pkg._id}`}
+                          className="action-btn view"
+                          title="View package"
+                        >
+                          <Eye size={16} />
+                        </Link>
+                        <Link
+                          to={`/packages/edit/${pkg._id}`}
+                          className="action-btn edit"
+                          title="Edit package"
+                        >
+                          <Edit size={16} />
+                        </Link>
+                        <button
+                          className="action-btn delete"
+                          onClick={() => handleDelete(pkg._id)}
+                          title="Delete package"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

@@ -1,0 +1,199 @@
+.transactions-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+  
+  .header-content h1 {
+    font-size: 2rem;
+    color: #1a1a1a;
+    margin: 0 0 0.5rem 0;
+  }
+  
+  .header-content p {
+    color: #666;
+    font-size: 1.1rem;
+  }
+  
+  .add-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #0066cc;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+  
+  .add-button:hover {
+    background: #0052a3;
+    transform: translateY(-2px);
+  }
+  
+  .table-container {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+  
+  .transactions-table {
+    width: 100%;
+    border-collapse: collapse;
+    white-space: nowrap;
+  }
+  
+  .transactions-table th {
+    background: #f8f9fa;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: #666;
+  }
+  
+  .transactions-table td {
+    padding: 1rem;
+    border-top: 1px solid #eee;
+    color: #1a1a1a;
+  }
+  
+  .status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 2rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  
+  .status-badge.pending {
+    background: #fff3e0;
+    color: #f57c00;
+  }
+  
+  .status-badge.completed {
+    background: #e8f5e9;
+    color: #2e7d32;
+  }
+  
+  .status-badge.cancelled {
+    background: #ffebee;
+    color: #d32f2f;
+  }
+  
+  .action-buttons {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .edit-button,
+  .delete-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 0.5rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .edit-button {
+    background: #e3f2fd;
+    color: #0066cc;
+  }
+  
+  .delete-button {
+    background: #ffebee;
+  color: #d32f2f;
+  }
+  
+  .edit-button:hover,
+  .delete-button:hover {
+    transform: translateY(-2px);
+    opacity: 0.9;
+  }
+  
+  .loading-state,
+  .error-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    gap: 1rem;
+  }
+  
+  .loading-spinner {
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  .error-state {
+    color: #d32f2f;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .transactions-container {
+      padding: 1rem;
+    }
+  
+    .page-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+  
+    .add-button {
+      width: 100%;
+      justify-content: center;
+    }
+  
+    .table-container {
+      overflow-x: auto;
+    }
+  
+    .transactions-table {
+      font-size: 0.875rem;
+    }
+  
+    .transactions-table th,
+    .transactions-table td {
+      padding: 0.75rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .header-content h1 {
+      font-size: 1.5rem;
+    }
+  
+    .header-content p {
+      font-size: 1rem;
+    }
+  
+    .action-buttons {
+      flex-direction: column;
+    }
+  
+    .edit-button,
+    .delete-button {
+      width: 100%;
+      padding: 0.5rem;
+    }
+  }

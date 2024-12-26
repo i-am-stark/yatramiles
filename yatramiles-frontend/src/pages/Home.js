@@ -35,16 +35,19 @@ const Home = () => {
 
   return (
     <div className="home">
-      <section className="hero-section" style={{
-        backgroundImage: `url(${backgroundImages[currentImageIndex]})`,
-      }}>
+      <section 
+        className="hero-section" 
+        style={{
+          backgroundImage: `url(${backgroundImages[currentImageIndex]})`,
+        }}
+      >
         <div className="hero-overlay" />
         <div className="hero-content">
           <h1>Discover Your Next Adventure</h1>
           <p>Explore the world with our curated travel packages. Create memories that last a lifetime.</p>
           <Link to="/packages" className="hero-button">
             View All Packages
-            <ArrowRight className="arrow-icon" />
+            <ArrowRight size={20} />
           </Link>
         </div>
       </section>
@@ -60,26 +63,29 @@ const Home = () => {
               <div key={pkg._id} className="package-card">
                 <div className="package-image-container">
                   {pkg.images?.[0] ? (
-                    <img src={pkg.images[0]} alt={pkg.name} />
+                    <img src={pkg.images[0]} alt={pkg.name} loading="lazy" />
                   ) : (
                     <div className="placeholder-image">Image Not Available</div>
                   )}
-                  <div className="package-price">${pkg.price || 'Price not available'}</div>
+                  <div className="package-price">
+                    <span>${pkg.price || 'Price not available'}</span>
+                  </div>
                 </div>
                 <div className="package-details">
                   <h3>{pkg.name}</h3>
                   <div className="package-info">
-                    <div className="package-info-item">
-                      <MapPin className="icon" />
+                    <div className="info-item">
+                      <MapPin size={16} />
                       <span>{pkg.destination || 'Destination not provided'}</span>
                     </div>
-                    <div className="package-info-item">
-                      <Clock className="icon" />
+                    <div className="info-item">
+                      <Clock size={16} />
                       <span>{pkg.duration || 'Duration not specified'}</span>
                     </div>
                   </div>
                   <Link to={`/packages/${pkg._id}`} className="view-details-button">
                     View Details
+                    <ArrowRight size={16} />
                   </Link>
                 </div>
               </div>
@@ -93,30 +99,24 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="why-choose-us">
+      <section className="features-section">
         <div className="section-header">
           <h2>Why Choose Us</h2>
           <p>Experience the difference with our premium services</p>
         </div>
         <div className="features-grid">
-          <div className="feature-item">
-            <div className="feature-icon">
-              <Compass />
-            </div>
+          <div className="feature-card">
+            <Compass size={32} />
             <h3>Handpicked Destinations</h3>
             <p>Carefully selected locations to ensure the best travel experience.</p>
           </div>
-          <div className="feature-item">
-            <div className="feature-icon">
-              <Shield />
-            </div>
+          <div className="feature-card">
+            <Shield size={32} />
             <h3>Best Price Guarantee</h3>
             <p>We offer competitive prices and valuable packages.</p>
           </div>
-          <div className="feature-item">
-            <div className="feature-icon">
-              <Headphones />
-            </div>
+          <div className="feature-card">
+            <Headphones size={32} />
             <h3>24/7 Support</h3>
             <p>Round-the-clock assistance for all your travel needs.</p>
           </div>

@@ -10,8 +10,10 @@ import Login from './pages/Login';
 import OwnerDashboard from './pages/OwnerDashboard';
 import StaffDashboard from './pages/StaffDashboard';
 import CustomerDashboard from './pages/CustomerDashboard';
+import PackageDetails from './pages/PackageDetails';
 import PrivateRoute from './components/PrivateRoute';
 import ManagePackages from './pages/ManagePackages';
+import ManageStaffPage from './pages/ManageStaffPage'; 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AllTransactionsPage from './pages/AllTransactionsPage';
@@ -49,6 +51,7 @@ const App = () => {
             <Route path="/staff-transactions" element={<StaffTransactionsPage />} />
             <Route path="/transactions/new" element={<CreateTransactionPage />} />
             <Route path="/transactions/edit/:transactionId" element={<EditTransactionPage />} />
+            <Route path="/packages/:id" element={<PackageDetails />} />
             <Route
               path="/owner-dashboard"
               element={
@@ -81,6 +84,14 @@ const App = () => {
                 </PrivateRoute>
               }
             />
+            <Route
+            path="/manage-staff"
+            element={
+              <PrivateRoute>
+                <ManageStaffPage />
+              </PrivateRoute>
+            }
+          />
           </Routes>
         </div>
         <Footer /> {/* Add Footer component here */}

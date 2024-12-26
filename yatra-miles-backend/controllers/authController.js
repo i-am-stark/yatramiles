@@ -151,46 +151,84 @@ const verifyOtp = async (req, res) => {
 };
 
 
-// Create Staff Account (Owner Only)
-
-const createStaff = async (req, res) => {
+// Add a new staff member
+const addStaff = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    // Validate required fields
     if (!name || !email || !password) {
-      return res.status(400).json({ message: 'Please provide all required fields' });
+      return res.status(400).json({ message: 'Name, email, and password are required' });
     }
 
-    // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ message: 'User already exists' });
+      return res.status(400).json({ message: 'Email already exists' });
     }
 
-    // Create a new staff user
-    const staff = new User({
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newStaff = await User.create({
       name,
       email,
-      password,
+      password: hashedPassword,
       role: 'Staff',
-      isVerified: true,
     });
 
-    await staff.save();
+    // Send email to the new staff member
+    const emailSubject = 'Welcome to YatraMiles';
+    const emailText = `Dear ${name},\n\nWelcome to YatraMiles! Your account has been successfully created.\n\nHere are your login credentials:\nEmail: ${email}\nPassword: ${password}\n\nBest regards,\nThe YatraMiles Team`;
 
-    res.status(201).json({ message: 'Staff account created successfully' });
+    try {
+      await sendEmail(email, emailSubject, emailText);
+      console.log('Email sent successfully');
+    } catch (emailError) {
+      console.error('Error sending email:', emailError.message);
+      // Optionally handle email failure here (e.g., log it, notify admin)
+    }
+
+    res.status(201).json({ message: 'Staff added successfully', staff: newStaff });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error creating staff account', error: error.message });
+    console.error('Error adding staff:', error.message);
+    res.status(500).json({ message: 'Error adding staff', error: error.message });
   }
 };
+
+// Get all staff members
+const getAllStaff = async (req, res) => {
+  try {
+    const staffMembers = await User.find({ role: 'Staff' });
+    res.status(200).json(staffMembers);
+  } catch (error) {
+    console.error('Error fetching staff members:', error.message);
+    res.status(500).json({ message: 'Error fetching staff', error: error.message });
+  }
+};
+
+// Delete a staff member
+const deleteStaff = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const staffMember = await User.findByIdAndDelete(id);
+    if (!staffMember) {
+      return res.status(404).json({ message: 'Staff member not found' });
+    }
+
+    res.status(200).json({ message: 'Staff member deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting staff member:', error.message);
+    res.status(500).json({ message: 'Error deleting staff', error: error.message });
+  }
+};
+
 
 
 module.exports = {
   registerUser,
   loginUser,
-  createStaff,
   verifyOtp,
   resendOtp,
+  getAllStaff,
+  addStaff,
+  deleteStaff,
 };

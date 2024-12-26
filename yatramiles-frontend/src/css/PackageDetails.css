@@ -1,0 +1,28 @@
+.package-details-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .package-images img {
+    width: 100%;
+    height: auto;
+    margin-bottom: 10px;
+  }
+  
+  .package-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+  
+  .detail-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .package-description {
+    margin-top: 20px;
+  }
+  

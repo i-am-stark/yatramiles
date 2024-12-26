@@ -1,5 +1,5 @@
 const express = require('express');
-const { registerUser, loginUser, createStaff, verifyOtp, resendOtp } = require('../controllers/authController');
+const { registerUser, loginUser, verifyOtp, resendOtp, getAllStaff, addStaff, deleteStaff } = require('../controllers/authController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 
 const router = express.Router();
@@ -17,7 +17,14 @@ router.post('/verify-otp', verifyOtp);
 router.post('/resend-otp', resendOtp);
 
 // Create Staff Account (Owner Only)
-router.post('/create-staff', protect, authorize('Owner'), createStaff);
+router.post('/staff', protect, authorize('Owner'), addStaff);
+
+// Get All Staff
+router.get('/staff', protect, authorize('Owner'), getAllStaff);
+
+// Delete Staff
+router.delete('/staff/:id', protect, authorize('Owner'), deleteStaff);
+
 
 // Log Out
 router.post('/logout', protect, (req, res) => {

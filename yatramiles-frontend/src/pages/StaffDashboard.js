@@ -10,7 +10,8 @@ import {
   AlertCircle, 
   Loader,
   CheckCircle,
-  RefreshCw
+  RefreshCw,
+  BarChart
 } from 'lucide-react';
 import './../css/StaffDashboard.css';
 
@@ -81,21 +82,68 @@ const StaffDashboard = () => {
   if (loading) {
     return (
       <div className="loading-state">
-        <Loader className="spin" size={40} />
-        <p>Loading transactions...</p>
+        <Loader className="loading-spinner" />
+        <p>Loading your dashboard...</p>
       </div>
     );
   }
+
+  const stats = {
+    total: transactions.length,
+    completed: transactions.filter(t => t.status === 'Completed').length,
+    inProgress: transactions.filter(t => t.status === 'In Progress').length,
+    initiated: transactions.filter(t => t.status === 'Initiated').length
+  };
 
   return (
     <div className="staff-dashboard">
       <div className="dashboard-header">
         <div className="header-content">
           <h1>Staff Dashboard</h1>
-          <p>Manage and track customer transactions</p>
-          <Link to="/staff-transactions" className="view-transactions-button">
-            View My Transactions
-          </Link>
+          <p>Manage and track customer transactions efficiently</p>
+        </div>
+        <Link to="/staff-transactions" className="view-all-button">
+          <BarChart size={20} />
+          View All Transactions
+        </Link>
+      </div>
+
+      <div className="stats-container">
+        <div className="stat-card">
+          <div className="stat-icon total">
+            <FileText size={24} />
+          </div>
+          <div className="stat-info">
+            <h3>Total</h3>
+            <p>{stats.total}</p>
+          </div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-icon completed">
+            <CheckCircle size={24} />
+          </div>
+          <div className="stat-info">
+            <h3>Completed</h3>
+            <p>{stats.completed}</p>
+          </div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-icon progress">
+            <RefreshCw size={24} />
+          </div>
+          <div className="stat-info">
+            <h3>In Progress</h3>
+            <p>{stats.inProgress}</p>
+          </div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-icon initiated">
+            <FileText size={24} />
+          </div>
+          <div className="stat-info">
+            <h3>Initiated</h3>
+            <p>{stats.initiated}</p>
+          </div>
         </div>
       </div>
 
@@ -152,7 +200,7 @@ const StaffDashboard = () => {
                   disabled={updatingStatus[transaction._id]}
                 >
                   {updatingStatus[transaction._id] ? (
-                    <RefreshCw size={16} className="spin" />
+                    <RefreshCw size={16} className="loading-spinner" />
                   ) : (
                     <CheckCircle size={16} />
                   )}
