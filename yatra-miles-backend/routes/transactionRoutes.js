@@ -1,35 +1,28 @@
 const express = require('express');
 const { protect, authorize } = require('../middleware/authMiddleware');
 const {
-  createTransaction,
-  getTransactions,
-  updateTransactionStatus,
   getTransactionById,
+  getTransactions,
+  updateTransaction,
+  createTransactionFromQuery,
+  deleteTransaction,
 } = require('../controllers/transactionController');
-const User = require('../models/User');
 
 const router = express.Router();
 
-// Fetch all customers for dropdown
-router.get('/customers', protect, authorize('Staff', 'Owner'), async (req, res) => {
-  try {
-    const customers = await User.find({ role: 'Customer' }).select('_id name email');
-    res.status(200).json(customers);
-  } catch (error) {
-    console.error('Error fetching customers:', error.message);
-    res.status(500).json({ message: 'Failed to fetch customers' });
-  }
-});
-
-// Create a Transaction
-router.post('/', protect, authorize('Staff', 'Owner'), createTransaction);
+// Get Transaction by ID
+router.get('/:id', protect, authorize('Staff', 'Owner', 'Customer'), getTransactionById);
 
 // Get All Transactions
-router.get('/', protect, getTransactions);
+router.get('/', protect, authorize('Staff', 'Owner', 'Customer'), getTransactions);
 
-router.get('/:id', protect, getTransactionById);
+// Update Transaction
+router.put('/:id', protect, authorize('Staff', 'Owner'), updateTransaction);
 
-// Update Transaction Status
-router.put('/:id', protect, authorize('Staff', 'Owner'), updateTransactionStatus);
+// Create Transaction from Query
+router.post('/from-query/:queryId', protect, authorize('Staff', 'Owner'), createTransactionFromQuery);
+
+// Delete a Transaction
+router.delete('/:id', protect, authorize('Owner', 'Staff'), deleteTransaction);
 
 module.exports = router;

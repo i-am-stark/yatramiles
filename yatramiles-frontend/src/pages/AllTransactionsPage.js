@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import { Plus, Edit, Trash2, Loader, AlertCircle } from 'lucide-react';
+import { Plus, Edit, Trash2, Loader, AlertCircle, ChevronDown, ChevronUp, Filter } from 'lucide-react';
 import './../css/AllTransactionsPage.css';
 
 const AllTransactionsPage = () => {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [sortConfig, setSortConfig] = useState({ key: '', direction: '' });
+  const [searchTerm, setSearchTerm] = useState('');
 
   const fetchTransactions = async () => {
     try {
@@ -38,6 +40,30 @@ const AllTransactionsPage = () => {
     }
   };
 
+  const sortTransactions = (key) => {
+    const direction = sortConfig.key === key && sortConfig.direction === 'asc' ? 'desc' : 'asc';
+    const sortedTransactions = [...transactions].sort((a, b) => {
+      const aValue = key.includes('.') ? key.split('.').reduce((obj, prop) => obj[prop], a) : a[key];
+      const bValue = key.includes('.') ? key.split('.').reduce((obj, prop) => obj[prop], b) : b[key];
+
+      if (aValue < bValue) return direction === 'asc' ? -1 : 1;
+      if (aValue > bValue) return direction === 'asc' ? 1 : -1;
+      return 0;
+    });
+    setSortConfig({ key, direction });
+    setTransactions(sortedTransactions);
+  };
+
+  const filteredTransactions = transactions.filter(txn => {
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      txn.customer.name.toLowerCase().includes(searchLower) ||
+      txn.customer.email.toLowerCase().includes(searchLower) ||
+      txn.location.toLowerCase().includes(searchLower) ||
+      txn.status.toLowerCase().includes(searchLower)
+    );
+  });
+
   useEffect(() => {
     fetchTransactions();
   }, []);
@@ -60,6 +86,15 @@ const AllTransactionsPage = () => {
     );
   }
 
+  const formatDate = (date) => {
+    return new Date(date).toLocaleDateString();
+  };
+
+  const getSortIcon = (key) => {
+    if (sortConfig.key !== key) return <ChevronDown size={16} />;
+    return sortConfig.direction === 'asc' ? <ChevronUp size={16} /> : <ChevronDown size={16} />;
+  };
+
   return (
     <div className="transactions-container">
       <div className="page-header">
@@ -73,43 +108,88 @@ const AllTransactionsPage = () => {
         </Link>
       </div>
 
+      <div className="filters-section">
+        <div className="search-box">
+          <input
+            type="text"
+            placeholder="Search transactions..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <Filter size={20} />
+        </div>
+        <div className="transactions-count">
+          Showing {filteredTransactions.length} transactions
+        </div>
+      </div>
+
       <div className="table-container">
         <table className="transactions-table">
           <thead>
             <tr>
-              <th>Customer</th>
-              <th>Staff</th>
-              <th>Package</th>
-              <th>Status</th>
+              <th onClick={() => sortTransactions('customer.name')}>
+                Customer {getSortIcon('customer.name')}
+              </th>
+              <th onClick={() => sortTransactions('customer.email')}>
+                Email {getSortIcon('customer.email')}
+              </th>
+              <th onClick={() => sortTransactions('customer.whatsappNumber')}>
+                Contact {getSortIcon('customer.whatsappNumber')}
+              </th>
+              <th onClick={() => sortTransactions('staff.name')}>
+                Staff {getSortIcon('staff.name')}
+              </th>
+              <th onClick={() => sortTransactions('location')}>
+                Location {getSortIcon('location')}
+              </th>
+              <th onClick={() => sortTransactions('status')}>
+                Status {getSortIcon('status')}
+              </th>
+              <th onClick={() => sortTransactions('totalRevenue')}>
+                Revenue {getSortIcon('totalRevenue')}
+              </th>
+              <th onClick={() => sortTransactions('createdAt')}>
+                Created {getSortIcon('createdAt')}
+              </th>
+              <th onClick={() => sortTransactions('updatedAt')}>
+                Updated {getSortIcon('updatedAt')}
+              </th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {transactions.map((txn) => (
+            {filteredTransactions.map((txn) => (
               <tr key={txn._id}>
-                <td>{txn.customer.name}</td>
+                <td className="customer-name">{txn.customer.name}</td>
+                <td className="email">{txn.customer.email}</td>
+                <td>{txn.customer.whatsappNumber}</td>
                 <td>{txn.staff.name}</td>
-                <td>{txn.package.name}</td>
+                <td>{txn.location}</td>
                 <td>
                   <span className={`status-badge ${txn.status.toLowerCase()}`}>
                     {txn.status}
                   </span>
                 </td>
-                <td className="action-buttons">
-                  <Link
-                    to={`/transactions/edit/${txn._id}`}
-                    className="edit-button"
-                    title="Edit transaction"
-                  >
-                    <Edit size={16} />
-                  </Link>
-                  <button
-                    onClick={() => handleDelete(txn._id)}
-                    className="delete-button"
-                    title="Delete transaction"
-                  >
-                    <Trash2 size={16}/>
-                  </button>
+                <td className="revenue">${txn.totalRevenue || 'N/A'}</td>
+                <td>{formatDate(txn.createdAt)}</td>
+                <td>{formatDate(txn.updatedAt)}</td>
+                <td>
+                  <div className="action-buttons">
+                    <Link
+                      to={`/transactions/edit/${txn._id}`}
+                      className="action-btn edit"
+                      title="Edit transaction"
+                    >
+                      <Edit size={16} />
+                    </Link>
+                    <button
+                      onClick={() => handleDelete(txn._id)}
+                      className="action-btn delete"
+                      title="Delete transaction"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}

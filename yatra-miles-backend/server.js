@@ -41,6 +41,9 @@ app.use('/api/dashboard', dashboardRoutes);
 const profileRoutes = require('./routes/profileRoutes');
 app.use('/api/profile', profileRoutes);
 
+const queryRoutes = require('./routes/queryRoutes');
+app.use('/api/queries', queryRoutes);
+
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Start the server
 const PORT = process.env.PORT || 5001;

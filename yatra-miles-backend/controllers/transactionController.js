@@ -1,75 +1,33 @@
 const Transaction = require('../models/Transaction');
+const Query = require('../models/Query');
 const User = require('../models/User');
-const Package = require('../models/Package');
-const sendEmail = require('../utils/sendEmail');
 
-// Create Transaction by Staff or Owner
-exports.createTransaction = async (req, res) => {
-  try {
-    const { customerId, packageId, status } = req.body;
-
-    const customer = await User.findById(customerId);
-    const travelPackage = await Package.findById(packageId);
-
-    if (!customer || !travelPackage) {
-      return res.status(404).json({ message: 'Customer or Package not found' });
-    }
-
-    // Create transaction with nested objects for customer, staff, and package
-    const newTransaction = await Transaction.create({
-      customer: { id: customer._id, name: customer.name },
-      staff: { id: req.user._id, name: req.user.name },
-      package: { id: travelPackage._id, name: travelPackage.name },
-      status: status || 'Initiated',
-    });
-
-    // Send email notification to the customer
-    await sendEmail(
-      customer.email,
-      'Transaction Created',
-      `Dear ${customer.name}, your transaction for the package "${travelPackage.name}" has been created. Status: ${status || 'Initiated'}.`
-    );
-
-    res.status(201).json(newTransaction);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error creating transaction', error: error.message });
-  }
-};
-
+// Get Transaction by ID
 exports.getTransactionById = async (req, res) => {
   try {
     const { id } = req.params;
     const transaction = await Transaction.findById(id);
-
     if (!transaction) {
       return res.status(404).json({ message: 'Transaction not found' });
     }
-
     res.status(200).json(transaction);
   } catch (error) {
-    console.error(error);
+    console.error('Error fetching transaction:', error.message);
     res.status(500).json({ message: 'Error fetching transaction', error: error.message });
   }
 };
-
-
 
 // Get All Transactions
 exports.getTransactions = async (req, res) => {
   try {
     const { role, id } = req.user;
-
     let transactions;
 
     if (role === 'Customer') {
-      // Fetch transactions for the logged-in customer
       transactions = await Transaction.find({ 'customer.id': id });
     } else if (role === 'Staff') {
-      // Fetch transactions created by the logged-in staff
       transactions = await Transaction.find({ 'staff.id': id });
     } else if (role === 'Owner') {
-      // Fetch all transactions for the owner
       transactions = await Transaction.find();
     } else {
       return res.status(403).json({ message: 'Unauthorized' });
@@ -78,31 +36,109 @@ exports.getTransactions = async (req, res) => {
     res.status(200).json(transactions);
   } catch (error) {
     console.error('Error fetching transactions:', error.message);
-    res.status(500).json({ message: 'Failed to fetch transactions', error: error.message });
+    res.status(500).json({ message: 'Error fetching transactions', error: error.message });
   }
 };
 
-
-
-// Update Transaction Status (Staff Only)
-exports.updateTransactionStatus = async (req, res) => {
+// Update Transaction
+exports.updateTransaction = async (req, res) => {
   try {
-    const { status } = req.body;
+    const { id } = req.params;
+    const updatedData = req.body;
 
-    const updatedTransaction = await Transaction.findByIdAndUpdate(
-      req.params.id,
-      { status },
-      { new: true, runValidators: true } // Return updated document and validate status
-    );
-
-    if (!updatedTransaction) {
+    const transaction = await Transaction.findById(id);
+    if (!transaction) {
       return res.status(404).json({ message: 'Transaction not found' });
     }
 
-    res.status(200).json(updatedTransaction);
+    Object.assign(transaction, updatedData);
+    await transaction.save();
+
+    const query = await Query.findOne({ email: transaction.customer.email });
+    if (query) {
+      Object.assign(query, {
+        name: transaction.customer.name,
+        whatsapp: transaction.customer.whatsappNumber,
+        travelingFrom: transaction.travelingFrom,
+        location: transaction.location,
+        adults: transaction.noOfAdults,
+        kids: transaction.noOfKids,
+        extraInfo: transaction.extraInfo,
+        duration: transaction.tourDuration,
+        hotelType: transaction.hotelType,
+        budget: transaction.budget,
+        status: transaction.status,
+        handler: transaction.staff,
+      });
+      await query.save();
+    }
+
+    res.status(200).json({ message: 'Transaction and Query updated successfully', transaction, query });
   } catch (error) {
-    console.error(error);
+    console.error('Error updating transaction:', error.message);
     res.status(500).json({ message: 'Error updating transaction', error: error.message });
   }
 };
 
+exports.deleteTransaction = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const transaction = await Transaction.findByIdAndDelete(id);
+    if (!transaction) {
+      return res.status(404).json({ message: 'Transaction not found' });
+    }
+    res.status(200).json({ message: 'Transaction deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting transaction:', error.message);
+    res.status(500).json({ message: 'Error deleting transaction', error: error.message });
+  }
+};
+
+// Create Transaction from Query
+exports.createTransactionFromQuery = async (req, res) => {
+  try {
+    const { queryId } = req.params;
+    const query = await Query.findById(queryId);
+    if (!query) {
+      return res.status(404).json({ message: 'Query not found' });
+    }
+
+    const staff = await User.findById(query.handler.id);
+    if (!staff) {
+      return res.status(404).json({ message: 'Assigned staff not found' });
+    }
+
+    const transactionData = {
+      customer: {
+        id: query.customerId || null,
+        name: query.name,
+        email: query.email,
+        whatsappNumber: query.whatsapp,
+      },
+      staff: {
+        id: staff._id,
+        name: staff.name,
+      },
+      travelingFrom: query.travelingFrom,
+      location: query.location,
+      noOfAdults: query.adults,
+      noOfKids: query.kids,
+      extraInfo: query.extraInfo,
+      tourDuration: query.duration,
+      hotelType: query.hotelType,
+      budget: query.budget,
+      package: { dropCity: query.location },
+      status: query.status,
+    };
+
+    const newTransaction = await Transaction.create(transactionData);
+
+    query.status = 'Converted to Transaction';
+    await query.save();
+
+    res.status(201).json(newTransaction);
+  } catch (error) {
+    console.error('Error creating transaction from query:', error.message);
+    res.status(500).json({ message: 'Error creating transaction', error: error.message });
+  }
+};
