@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 
 const packageSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  packageType: { type: String, enum: ['Religious', 'Adventure', 'Other'], required: true },
   description: { type: String, required: true },
   price: { type: Number, required: true },
   duration: { type: String, required: true },

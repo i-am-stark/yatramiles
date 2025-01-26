@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Mail, User, Phone, MapPin, Clipboard, Calendar, DollarSign, Home } from 'lucide-react';
+import React, { useState } from 'react';
+import { Mail, User, Phone, MapPin, Clipboard, Calendar, DollarSign, Home, Send } from 'lucide-react';
 import './../css/Contact.css';
 
 const Contact = () => {
@@ -81,109 +81,191 @@ const Contact = () => {
   };
 
   return (
-    <div className="contact-page">
-      <h1>Contact Us</h1>
+    <div className="contact-container">
+      <div className="contact-header">
+        <h1>Plan Your Dream Vacation</h1>
+        <p>Fill out the form below and we'll help you create the perfect travel experience</p>
+      </div>
+
       <form className="contact-form" onSubmit={handleSubmit}>
-        <div className="form-group">
+        <div className="form-grid">
+          <div className="form-group">
+            <label>
+              <User size={18} />
+              <span>Name</span>
+            </label>
+            <input
+              name="name"
+              type="text"
+              value={formData.name}
+              onChange={handleChange}
+              className={errors.name ? 'error' : ''}
+              placeholder="Your full name"
+            />
+            {errors.name && <span className="error-text">{errors.name}</span>}
+          </div>
+
+          <div className="form-group">
+            <label>
+              <Phone size={18} />
+              <span>WhatsApp</span>
+            </label>
+            <input
+              name="whatsapp"
+              type="text"
+              value={formData.whatsapp}
+              onChange={handleChange}
+              className={errors.whatsapp ? 'error' : ''}
+              placeholder="WhatsApp number"
+            />
+            {errors.whatsapp && <span className="error-text">{errors.whatsapp}</span>}
+          </div>
+
+          <div className="form-group">
+            <label>
+              <Mail size={18} />
+              <span>Email</span>
+            </label>
+            <input
+              name="email"
+              type="email"
+              value={formData.email}
+              onChange={handleChange}
+              className={errors.email ? 'error' : ''}
+              placeholder="your@email.com"
+            />
+            {errors.email && <span className="error-text">{errors.email}</span>}
+          </div>
+
+          <div className="form-group">
+            <label>
+              <MapPin size={18} />
+              <span>Traveling From</span>
+            </label>
+            <input
+              name="travelingFrom"
+              type="text"
+              value={formData.travelingFrom}
+              onChange={handleChange}
+              placeholder="Your city"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>
+              <MapPin size={18} />
+              <span>Destination</span>
+            </label>
+            <input
+              name="location"
+              type="text"
+              value={formData.location}
+              onChange={handleChange}
+              className={errors.location ? 'error' : ''}
+              placeholder="Where to?"
+            />
+            {errors.location && <span className="error-text">{errors.location}</span>}
+          </div>
+
+          <div className="form-group">
+            <label>
+              <Clipboard size={18} />
+              <span>Number of Adults</span>
+            </label>
+            <input
+              name="adults"
+              type="number"
+              value={formData.adults}
+              onChange={handleChange}
+              className={errors.adults ? 'error' : ''}
+              placeholder="0"
+              min="1"
+            />
+            {errors.adults && <span className="error-text">{errors.adults}</span>}
+          </div>
+
+          <div className="form-group">
+            <label>
+              <Clipboard size={18} />
+              <span>Number of Kids</span>
+            </label>
+            <input
+              name="kids"
+              type="number"
+              value={formData.kids}
+              onChange={handleChange}
+              placeholder="0"
+              min="0"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>
+              <Calendar size={18} />
+              <span>Duration (days)</span>
+            </label>
+            <input
+              name="duration"
+              type="number"
+              value={formData.duration}
+              onChange={handleChange}
+              placeholder="Number of days"
+              min="1"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>
+              <Home size={18} />
+              <span>Hotel Preference</span>
+            </label>
+            <select name="hotelType" value={formData.hotelType} onChange={handleChange}>
+              <option value="">Select hotel type</option>
+              <option value="budget">Budget</option>
+              <option value="standard">Standard</option>
+              <option value="luxury">Luxury</option>
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label>
+              <DollarSign size={18} />
+              <span>Budget</span>
+            </label>
+            <input
+              name="budget"
+              type="number"
+              value={formData.budget}
+              onChange={handleChange}
+              placeholder="Your budget"
+              min="0"
+            />
+          </div>
+        </div>
+
+        <div className="form-group full-width">
           <label>
-            <User size={16} /> Name
+            <Clipboard size={18} />
+            <span>Additional Information</span>
           </label>
-          <input
-            name="name"
-            type="text"
-            value={formData.name}
+          <textarea
+            name="extraInfo"
+            value={formData.extraInfo}
             onChange={handleChange}
-            className={errors.name && 'error'}
-          />
-          {errors.name && <span className="error-text">{errors.name}</span>}
-        </div>
-
-        <div className="form-group">
-          <label>
-            <Phone size={16} /> Whatsapp
-          </label>
-          <input
-            name="whatsapp"
-            type="text"
-            value={formData.whatsapp}
-            onChange={handleChange}
-            className={errors.whatsapp && 'error'}
-          />
-          {errors.whatsapp && <span className="error-text">{errors.whatsapp}</span>}
-        </div>
-
-        <div className="form-group">
-          <label>
-            <Mail size={16} /> Email
-          </label>
-          <input
-            name="email"
-            type="email"
-            value={formData.email}
-            onChange={handleChange}
-            className={errors.email && 'error'}
-          />
-          {errors.email && <span className="error-text">{errors.email}</span>}
-        </div>
-
-        <div className="form-group">
-          <label>
-            <MapPin size={16} /> Traveling From
-          </label>
-          <input name="travelingFrom" type="text" value={formData.travelingFrom} onChange={handleChange} />
-        </div>
-
-        <div className="form-group">
-          <label>
-            <MapPin size={16} /> Location
-          </label>
-          <input name="location" type="text" value={formData.location} onChange={handleChange} />
-        </div>
-
-        <div className="form-group">
-          <label>
-            <Clipboard size={16} /> No of Adults
-          </label>
-          <input name="adults" type="number" value={formData.adults} onChange={handleChange} />
-        </div>
-
-        <div className="form-group">
-          <label>
-            <Clipboard size={16} /> No of Kids
-          </label>
-          <input name="kids" type="number" value={formData.kids} onChange={handleChange} />
-        </div>
-
-        <div className="form-group">
-          <label>
-            <Calendar size={16} /> Tour Duration (days)
-          </label>
-          <input name="duration" type="number" value={formData.duration} onChange={handleChange} />
-        </div>
-
-        <div className="form-group">
-          <label>
-            <Home size={16} /> Hotel Type
-          </label>
-          <input name="hotelType" type="text" value={formData.hotelType} onChange={handleChange} />
-        </div>
-
-        <div className="form-group">
-          <label>
-            <DollarSign size={16} /> Budget
-          </label>
-          <input name="budget" type="number" value={formData.budget} onChange={handleChange} />
-        </div>
-
-        <div className="form-group">
-          <label>
-            <Clipboard size={16} /> Extra Info
-          </label>
-          <textarea name="extraInfo" value={formData.extraInfo} onChange={handleChange}></textarea>
+            placeholder="Tell us more about your travel preferences..."
+            rows="4"
+          ></textarea>
         </div>
 
         <button type="submit" className="submit-button" disabled={isSubmitting}>
-          Submit
+          {isSubmitting ? (
+            'Submitting...'
+          ) : (
+            <>
+              <Send size={18} />
+              <span>Send Inquiry</span>
+            </>
+          )}
         </button>
       </form>
     </div>

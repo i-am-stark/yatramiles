@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-
+import { IndianRupee } from 'lucide-react';
 
 const AllPackages = () => {
   const [packages, setPackages] = useState([]);
@@ -34,7 +34,6 @@ const AllPackages = () => {
   };
 
   useEffect(() => {
-    // Fetch all packages on component mount
     fetchPackages();
   }, []);
 
@@ -168,35 +167,109 @@ const AllPackages = () => {
           }}
         >
           {packages.map((pkg) => (
-            <div
-              key={pkg._id}
-              style={{
-                border: '1px solid #ddd',
-                borderRadius: '5px',
-                padding: '15px',
-                textAlign: 'center',
-              }}
-            >
-              <img
-                src={`http://localhost:5001/${pkg.images[0]}`}
-                alt={pkg.name}
-                style={{
-                  width: '100%',
-                  height: '200px',
-                  objectFit: 'cover',
-                  borderRadius: '5px',
-                }}
-              />
-              <h3>{pkg.name}</h3>
-              <p>Price: ${pkg.price}</p>
-              <p>Duration: {pkg.duration} Days</p>
-              <Link to={`/packages/${pkg._id}`} style={{ textDecoration: 'none', color: '#007bff' }}>
-                View Details
-              </Link>
-            </div>
+            <PackageCard key={pkg._id} pkg={pkg} />
           ))}
         </div>
       )}
+    </div>
+  );
+};
+
+const PackageCard = ({ pkg }) => {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % pkg.images.length);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [pkg.images]);
+
+  return (
+    <div
+      style={{
+        border: '1px solid #ddd',
+        borderRadius: '5px',
+        padding: '15px',
+        textAlign: 'center',
+        position: 'relative',
+      }}
+    >
+      <span
+        style={{
+          position: 'absolute',
+          top: '10px',
+          left: '10px',
+          backgroundColor: '#007bff',
+          color: '#fff',
+          padding: '5px 10px',
+          borderRadius: '5px',
+          fontSize: '12px',
+        }}
+      >
+        Customizable
+      </span>
+      <img
+        src={`http://localhost:5001/${pkg.images[currentImageIndex]}`}
+        alt={pkg.name}
+        style={{
+          width: '100%',
+          height: '200px',
+          objectFit: 'cover',
+          borderRadius: '5px',
+        }}
+      />
+      <h3>{pkg.name}</h3>
+      <p>
+        Price: <IndianRupee size={16} />
+        {pkg.price}
+      </p>
+      <p>Duration: {pkg.duration} Days</p>
+
+      {/* New Buttons */}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          marginTop: '15px',
+        }}
+      >
+        <Link
+          to={`/packages/${pkg._id}`}
+          style={{
+            flex: 1,
+            padding: '10px',
+            textAlign: 'center',
+            backgroundColor: '#000',
+            color: '#fff',
+            textDecoration: 'none',
+            border: '1px solid #000',
+            borderRadius: '5px 0 0 5px',
+            fontSize: '14px',
+            fontWeight: 'bold',
+          }}
+        >
+          Book Now!
+        </Link>
+        <Link
+          to="/contact"
+          style={{
+            flex: 1,
+            padding: '10px',
+            textAlign: 'center',
+            backgroundColor: '#fff',
+            color: '#000',
+            textDecoration: 'none',
+            border: '1px solid #000',
+            borderRadius: '0 5px 5px 0',
+            fontSize: '14px',
+            fontWeight: 'bold',
+          }}
+        >
+          Explore
+        </Link>
+      </div>
     </div>
   );
 };

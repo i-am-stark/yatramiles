@@ -3,44 +3,32 @@ const Package = require('../models/Package');
 // Create a Package
 exports.createPackage = async (req, res) => {
   try {
-    const {
-      name,
-      packageType,
-      description,
-      price,
-      duration,
-      packageOverview,
-      tourItinerary,
-      inclusions,
-      exclusions,
-      importantNotes,
-    } = req.body;
+    const { name, description, price, duration, packageOverview, tourItinerary, inclusions, exclusions, importantNotes } = req.body;
 
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({ message: 'Please upload at least one image' });
     }
 
-    const imagePaths = req.files.map((file) => file.path); // Collect image paths
+    const imagePaths = req.files.map((file) => file.path);
 
     const newPackage = new Package({
       name,
-      packageType,
       description,
       price,
       duration,
+      images: imagePaths,
       packageOverview,
       tourItinerary,
-      inclusions: inclusions ? JSON.parse(inclusions) : [],
-      exclusions: exclusions ? JSON.parse(exclusions) : [],
-      importantNotes: importantNotes ? JSON.parse(importantNotes) : [],
-      images: imagePaths,
+      inclusions,
+      exclusions,
+      importantNotes,
     });
 
     await newPackage.save();
     res.status(201).json({ message: 'Package created successfully', package: newPackage });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Failed to create package', error: error.message });
+    res.status(500).json({ message: 'Failed to create package' });
   }
 };
 
@@ -50,7 +38,7 @@ exports.getPackages = async (req, res) => {
     const packages = await Package.find();
     const packagesWithFullImages = packages.map((pkg) => ({
       ...pkg.toObject(),
-      images: pkg.images.map((img) => `http://localhost:5001/${img}`), // Adjust URL
+      images: pkg.images.map((img) => `http://localhost:5001/${img}`),
     }));
     res.status(200).json(packagesWithFullImages);
   } catch (error) {
@@ -69,12 +57,7 @@ exports.getPackageById = async (req, res) => {
       return res.status(404).json({ message: 'Package not found' });
     }
 
-    const packageWithFullImages = {
-      ...travelPackage.toObject(),
-      images: travelPackage.images.map((img) => `http://localhost:5001/${img}`), // Adjust URL
-    };
-
-    res.status(200).json(packageWithFullImages);
+    res.status(200).json(travelPackage);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error fetching package', error: error.message });
@@ -85,42 +68,19 @@ exports.getPackageById = async (req, res) => {
 exports.updatePackage = async (req, res) => {
   try {
     const packageId = req.params.id;
-    const {
-      name,
-      packageType,
-      description,
-      price,
-      duration,
-      packageOverview,
-      tourItinerary,
-      inclusions,
-      exclusions,
-      importantNotes,
-    } = req.body;
+    const updatedData = req.body;
 
-    const packageData = await Package.findById(packageId);
+    // Include new fields in the update
+    const updatedPackage = await Package.findByIdAndUpdate(packageId, updatedData, {
+      new: true,
+      runValidators: true,
+    });
 
-    if (!packageData) {
+    if (!updatedPackage) {
       return res.status(404).json({ message: 'Package not found' });
     }
 
-    packageData.name = name || packageData.name;
-    packageData.packageType = packageType || packageData.packageType;
-    packageData.description = description || packageData.description;
-    packageData.price = price || packageData.price;
-    packageData.duration = duration || packageData.duration;
-    packageData.packageOverview = packageOverview || packageData.packageOverview;
-    packageData.tourItinerary = tourItinerary || packageData.tourItinerary;
-    packageData.inclusions = inclusions ? JSON.parse(inclusions) : packageData.inclusions;
-    packageData.exclusions = exclusions ? JSON.parse(exclusions) : packageData.exclusions;
-    packageData.importantNotes = importantNotes ? JSON.parse(importantNotes) : packageData.importantNotes;
-
-    if (req.files && req.files.length > 0) {
-      packageData.images = req.files.map((file) => file.path);
-    }
-
-    await packageData.save();
-    res.status(200).json({ message: 'Package updated successfully', package: packageData });
+    res.status(200).json(updatedPackage);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error updating package', error: error.message });
