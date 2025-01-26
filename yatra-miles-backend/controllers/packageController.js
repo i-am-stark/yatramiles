@@ -3,7 +3,18 @@ const Package = require('../models/Package');
 // Create a Package
 exports.createPackage = async (req, res) => {
   try {
-    const { name, description, price, duration } = req.body;
+    const {
+      name,
+      packageType,
+      description,
+      price,
+      duration,
+      packageOverview,
+      tourItinerary,
+      inclusions,
+      exclusions,
+      importantNotes,
+    } = req.body;
 
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({ message: 'Please upload at least one image' });
@@ -13,9 +24,15 @@ exports.createPackage = async (req, res) => {
 
     const newPackage = new Package({
       name,
+      packageType,
       description,
       price,
       duration,
+      packageOverview,
+      tourItinerary,
+      inclusions: inclusions ? JSON.parse(inclusions) : [],
+      exclusions: exclusions ? JSON.parse(exclusions) : [],
+      importantNotes: importantNotes ? JSON.parse(importantNotes) : [],
       images: imagePaths,
     });
 
@@ -23,11 +40,9 @@ exports.createPackage = async (req, res) => {
     res.status(201).json({ message: 'Package created successfully', package: newPackage });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Failed to create package' });
+    res.status(500).json({ message: 'Failed to create package', error: error.message });
   }
 };
-
-
 
 // Get All Packages
 exports.getPackages = async (req, res) => {
@@ -44,7 +59,6 @@ exports.getPackages = async (req, res) => {
   }
 };
 
-
 // Get Package by ID
 exports.getPackageById = async (req, res) => {
   try {
@@ -55,7 +69,12 @@ exports.getPackageById = async (req, res) => {
       return res.status(404).json({ message: 'Package not found' });
     }
 
-    res.status(200).json(travelPackage);
+    const packageWithFullImages = {
+      ...travelPackage.toObject(),
+      images: travelPackage.images.map((img) => `http://localhost:5001/${img}`), // Adjust URL
+    };
+
+    res.status(200).json(packageWithFullImages);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error fetching package', error: error.message });
@@ -66,18 +85,42 @@ exports.getPackageById = async (req, res) => {
 exports.updatePackage = async (req, res) => {
   try {
     const packageId = req.params.id;
-    const updatedData = req.body;
+    const {
+      name,
+      packageType,
+      description,
+      price,
+      duration,
+      packageOverview,
+      tourItinerary,
+      inclusions,
+      exclusions,
+      importantNotes,
+    } = req.body;
 
-    const updatedPackage = await Package.findByIdAndUpdate(packageId, updatedData, {
-      new: true, // Return the updated document
-      runValidators: true, // Validate the updated data
-    });
+    const packageData = await Package.findById(packageId);
 
-    if (!updatedPackage) {
+    if (!packageData) {
       return res.status(404).json({ message: 'Package not found' });
     }
 
-    res.status(200).json(updatedPackage);
+    packageData.name = name || packageData.name;
+    packageData.packageType = packageType || packageData.packageType;
+    packageData.description = description || packageData.description;
+    packageData.price = price || packageData.price;
+    packageData.duration = duration || packageData.duration;
+    packageData.packageOverview = packageOverview || packageData.packageOverview;
+    packageData.tourItinerary = tourItinerary || packageData.tourItinerary;
+    packageData.inclusions = inclusions ? JSON.parse(inclusions) : packageData.inclusions;
+    packageData.exclusions = exclusions ? JSON.parse(exclusions) : packageData.exclusions;
+    packageData.importantNotes = importantNotes ? JSON.parse(importantNotes) : packageData.importantNotes;
+
+    if (req.files && req.files.length > 0) {
+      packageData.images = req.files.map((file) => file.path);
+    }
+
+    await packageData.save();
+    res.status(200).json({ message: 'Package updated successfully', package: packageData });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error updating package', error: error.message });
@@ -102,17 +145,18 @@ exports.deletePackage = async (req, res) => {
   }
 };
 
+// Search Packages
 exports.searchPackages = async (req, res) => {
   try {
-    const { search, minPrice, maxPrice, minDuration, maxDuration } = req.query;
+    const { search, minPrice, maxPrice, minDuration, maxDuration, packageType } = req.query;
 
     const query = {};
 
     // Case-insensitive search by name or description
     if (search) {
       query.$or = [
-        { name: { $regex: search, $options: 'i' } }, // Case-insensitive regex for name
-        { description: { $regex: search, $options: 'i' } }, // Case-insensitive regex for description
+        { name: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } },
       ];
     }
 
@@ -123,11 +167,16 @@ exports.searchPackages = async (req, res) => {
       if (maxPrice) query.price.$lte = parseFloat(maxPrice);
     }
 
-    // Filter by duration
+    // Filter by duration range
     if (minDuration || maxDuration) {
       query.duration = {};
       if (minDuration) query.duration.$gte = parseFloat(minDuration);
       if (maxDuration) query.duration.$lte = parseFloat(maxDuration);
+    }
+
+    // Filter by package type
+    if (packageType) {
+      query.packageType = packageType;
     }
 
     const packages = await Package.find(query);
@@ -137,4 +186,3 @@ exports.searchPackages = async (req, res) => {
     res.status(500).json({ message: 'Error fetching packages', error: error.message });
   }
 };
-
