@@ -13,7 +13,7 @@ const ManageStaffPage = () => {
   const fetchStaff = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5001/api/auth/staff', {
+      const response = await axios.get('http://147.93.103.220:5001/api/auth/staff', {
         headers: { Authorization: `Bearer ${token}` },
       });
       setStaffMembers(response.data);
@@ -39,7 +39,7 @@ const ManageStaffPage = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.post(
-        'http://localhost:5001/api/auth/staff',
+        'http://147.93.103.220:5001/api/auth/staff',
         { ...newStaff },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -57,7 +57,7 @@ const ManageStaffPage = () => {
     if (window.confirm(`Are you sure you want to remove ${name} from staff?`)) {
       try {
         const token = localStorage.getItem('token');
-        await axios.delete(`http://localhost:5001/api/auth/staff/${id}`, {
+        await axios.delete(`http://147.93.103.220:5001/api/auth/staff/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         toast.success('Staff member removed successfully');

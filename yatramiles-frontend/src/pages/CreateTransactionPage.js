@@ -18,10 +18,10 @@ const CreateTransactionPage = () => {
       try {
         const token = localStorage.getItem('token');
         const [customersResponse, packagesResponse] = await Promise.all([
-          axios.get('http://localhost:5001/api/transactions/customers', {
+          axios.get('http://147.93.103.220:5001/api/transactions/customers', {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get('http://localhost:5001/api/packages', {
+          axios.get('http://147.93.103.220:5001/api/packages', {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);
@@ -46,7 +46,7 @@ const CreateTransactionPage = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.post(
-        'http://localhost:5001/api/transactions',
+        'http://147.93.103.220:5001/api/transactions',
         formData,
         {
           headers: { Authorization: `Bearer ${token}` },

@@ -15,11 +15,13 @@ const AllPackages = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  const API_URL = process.env.REACT_APP_API_URL || 'http://147.93.103.220:5001';  // Use local or production API URL
+
   const fetchPackages = async () => {
     setLoading(true);
     setError('');
     try {
-      const response = await axios.get('/api/packages/search', {
+      const response = await axios.get(`${API_URL}/api/packages/search`, {
         params: {
           search: searchTerm,
           ...filters,
@@ -27,6 +29,7 @@ const AllPackages = () => {
       });
       setPackages(response.data);
     } catch (err) {
+      console.error(err);  // Log the error for debugging
       setError('Failed to fetch packages. Please try again.');
     } finally {
       setLoading(false);
@@ -35,7 +38,7 @@ const AllPackages = () => {
 
   useEffect(() => {
     fetchPackages();
-  }, []);
+  }, []);  // Fetch data when the component mounts
 
   const handleSearchChange = (e) => setSearchTerm(e.target.value);
 
@@ -211,7 +214,7 @@ const PackageCard = ({ pkg }) => {
         Customizable
       </span>
       <img
-        src={`http://localhost:5001/${pkg.images[currentImageIndex]}`}
+        src={`http://147.93.103.220:5001/${pkg.images[currentImageIndex]}`}
         alt={pkg.name}
         style={{
           width: '100%',

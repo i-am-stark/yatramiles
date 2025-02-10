@@ -142,7 +142,7 @@ const Home = () => {
   useEffect(() => {
     const fetchPackages = async () => {
       try {
-        const response = await axios.get('http://localhost:5001/api/packages'); // Adjust the URL
+        const response = await axios.get('http://147.93.103.220:5001/api/packages'); // Adjust the URL
         setFeaturedPackages(response.data);
       } catch (err) {
         setError(err.message);

@@ -21,25 +21,27 @@ const Login = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const response = await axios.post('/api/auth/login', formData);
+      // Updated API endpoint
+      const response = await axios.post('http://147.93.103.220:5001/api/auth/login', formData);
       login(response.data.token);
       
       const tokenPayload = JSON.parse(atob(response.data.token.split('.')[1]));
       const userRole = tokenPayload.role;
-
+  
       // Role-based navigation
       const roleRoutes = {
         Owner: '/owner-dashboard',
         Staff: '/staff-dashboard',
         Customer: '/customer-dashboard'
       };
-      navigate(roleRoutes[userRole]);
+      navigate(roleRoutes[userRole] || '/');
     } catch (error) {
       setError(error.response?.data?.message || 'Login failed');
     } finally {
       setIsLoading(false);
     }
   };
+  
 
   return (
     <div className="login-container">

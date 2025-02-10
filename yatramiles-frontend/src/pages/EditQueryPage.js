@@ -18,7 +18,7 @@ const EditQueryPage = () => {
   const fetchQuery = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`http://localhost:5001/api/queries/${id}`, {
+      const response = await axios.get(`http://147.93.103.220:5001/api/queries/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setQueryData(response.data);
@@ -41,7 +41,7 @@ const EditQueryPage = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.put(
-        `http://localhost:5001/api/queries/${id}`,
+        `http://147.93.103.220:5001/api/queries/${id}`,
         queryData,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -58,7 +58,7 @@ const EditQueryPage = () => {
     if (window.confirm('Are you sure you want to delete this query?')) {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.delete(`http://localhost:5001/api/queries/${id}`, {
+        const response = await axios.delete(`http://147.93.103.220:5001/api/queries/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         alert(response.data.message);

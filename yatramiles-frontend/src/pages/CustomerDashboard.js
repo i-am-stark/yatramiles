@@ -12,7 +12,7 @@ const CustomerDashboard = () => {
     const fetchTransactions = async () => {
       try {
         const token = localStorage.getItem('token'); // Get token from local storage
-        const response = await axios.get('http://localhost:5001/api/transactions', {
+        const response = await axios.get('http://147.93.103.220:5001/api/transactions', {
           headers: {
             Authorization: `Bearer ${token}`,
           },

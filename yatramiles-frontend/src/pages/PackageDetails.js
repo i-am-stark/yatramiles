@@ -29,7 +29,7 @@ const PackageDetails = () => {
   useEffect(() => {
     const fetchPackageDetails = async () => {
       try {
-        const response = await axios.get(`http://localhost:5001/api/packages/${id}`);
+        const response = await axios.get(`http://147.93.103.220:5001/api/packages/${id}`);
         setPackageDetails(response.data);
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to fetch package details');
@@ -107,7 +107,7 @@ const PackageDetails = () => {
                 <ChevronLeft size={24} />
               </button>
               <img
-                src={`http://localhost:5001/${packageDetails.images[currentImageIndex]}`}
+                src={`http://147.93.103.220:5001/${packageDetails.images[currentImageIndex]}`}
                 alt={packageDetails.name}
                 className="carousel-image"
               />

@@ -38,7 +38,7 @@ exports.getPackages = async (req, res) => {
     const packages = await Package.find();
     const packagesWithFullImages = packages.map((pkg) => ({
       ...pkg.toObject(),
-      images: pkg.images.map((img) => `http://localhost:5001/${img}`),
+      images: pkg.images.map((img) => `http://147.93.103.220:5001/${img}`),
     }));
     res.status(200).json(packagesWithFullImages);
   } catch (error) {
