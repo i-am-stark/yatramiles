@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Menu, X, Plane, User, Package, LayoutDashboard } from 'lucide-react';
 import { useUser } from '../context/UserContext';
 import './Navbar.css';
+import Logo from '../assets/images/logo.svg';
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -28,14 +29,12 @@ const Navbar = () => {
           {/* Logo */}
           <div className="navbar-logo">
             <Link to="/" className="logo-link">
-              <Plane className="logo-icon" />
-              <span className="logo-text">YatraMiles</span>
+              <img src={Logo} alt="YatraMiles Logo" className="logo-image" />
             </Link>
           </div>
 
           {/* Desktop Menu */}
           <div className="desktop-menu">
-            <NavLink to="/about" label="About" />
             <NavLink to="/packages" label="All Packages" icon={Package} />
             
             {isLoggedIn && userRole === 'Owner' && (

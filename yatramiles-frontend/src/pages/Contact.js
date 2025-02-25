@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, User, Phone, MapPin, Clipboard, Calendar, DollarSign, Home, Send } from 'lucide-react';
+import { Mail, User, Phone, MapPin, Clipboard, Calendar, IndianRupee, Home, Send } from 'lucide-react';
 import './../css/Contact.css';
 
 const Contact = () => {
@@ -229,7 +229,7 @@ const Contact = () => {
 
           <div className="form-group">
             <label>
-              <DollarSign size={18} />
+              <IndianRupee size={18} />
               <span>Budget</span>
             </label>
             <input

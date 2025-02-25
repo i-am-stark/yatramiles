@@ -26,11 +26,14 @@ import CustomerTransactions from './pages/CustomerTransactions';
 import StaffTransactionsPage from './pages/StaffTransactionsPage';
 import { UserProvider } from './context/UserContext'; 
 import AllPackages from './pages/AllPackages'; 
+import ScrollToTop from "./components/ScrollToTop";
+import WhatsAppButton from "./components/WhatsAppButton";
 
 const App = () => {
   return (
     <UserProvider>
       <Router>
+      <ScrollToTop />
         <Navbar />
         <ToastContainer />
         <div className="content">
@@ -100,6 +103,7 @@ const App = () => {
           />
           </Routes>
         </div>
+        <WhatsAppButton />
         <Footer /> {/* Add Footer component here */}
       </Router>
     </UserProvider>

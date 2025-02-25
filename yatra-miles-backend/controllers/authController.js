@@ -172,6 +172,7 @@ const addStaff = async (req, res) => {
       email,
       password: hashedPassword,
       role: 'Staff',
+      isVerified: true,
     });
 
     // Send email to the new staff member

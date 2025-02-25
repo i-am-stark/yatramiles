@@ -10,7 +10,7 @@
 .navbar-container {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 0;
 }
 
 .navbar-content {
@@ -24,6 +24,13 @@
 .navbar-logo {
   display: flex;
   align-items: center;
+  margin-left: 0;
+}
+
+.logo-image {
+  height: 50px; /* Adjust based on your design */
+  width: auto;
+  display: block;
 }
 
 .logo-link {

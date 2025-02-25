@@ -79,7 +79,7 @@ const PackageCard = ({ pkg }) => {
         }}
       >
         <Link
-          to={`/packages/${pkg._id}`}
+          to="/contact"
           style={{
             flex: 1,
             padding: '10px',
@@ -96,7 +96,7 @@ const PackageCard = ({ pkg }) => {
           Book Now!
         </Link>
         <Link
-          to="/contact"
+          to={`/packages/${pkg._id}`}
           style={{
             flex: 1,
             padding: '10px',

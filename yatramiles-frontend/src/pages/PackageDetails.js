@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { 
   Loader, 
@@ -11,6 +11,7 @@ import {
   ChevronRight,
   Calendar,
   Plane,
+  Phone,
   Coffee,
   XCircle,
   AlertTriangle,
@@ -148,7 +149,7 @@ const PackageDetails = () => {
           <MapPin size={24} />
           <div className="highlight-content">
             <h3>Destination</h3>
-            <p>{packageDetails.destination || 'Not specified'}</p>
+            <p>{packageDetails.description || 'Not specified'}</p>
           </div>
         </div>
       </div>
@@ -156,36 +157,55 @@ const PackageDetails = () => {
       <div className="package-content">
         <div className="content-section">
           <h2><Calendar size={20} /> Overview</h2>
-          <p>{packageDetails.packageOverview}</p>
+          <div dangerouslySetInnerHTML={{ __html: packageDetails.packageOverview.replace(/\r\n|\n/g, '<br/>') }} />
         </div>
 
         <div className="content-section">
           <h2><Plane size={20} /> Tour Itinerary</h2>
-          <p>{packageDetails.tourItinerary}</p>
+          <div dangerouslySetInnerHTML={{ __html: packageDetails.tourItinerary.replace(/\r\n|\n/g, '<br/>') }} />
         </div>
 
         <div className="content-section">
           <h2><Coffee size={20} /> Inclusions</h2>
-          <p>{packageDetails.inclusions}</p>
+          <ul>
+            {packageDetails.inclusions.map((item, index) => (
+              <li key={index}>{item}</li>
+            ))}
+          </ul>
         </div>
 
         <div className="content-section">
           <h2><XCircle size={20} /> Exclusions</h2>
-          <p>{packageDetails.exclusions}</p>
+          <ul>
+            {packageDetails.exclusions.map((item, index) => (
+              <li key={index}>{item}</li>
+            ))}
+          </ul>
         </div>
 
         <div className="content-section">
           <h2><AlertTriangle size={20} /> Important Notes</h2>
-          <p>{packageDetails.importantNotes}</p>
+          <ul>
+            {packageDetails.importantNotes.map((item, index) => (
+              <li key={index}>{item}</li>
+            ))}
+          </ul>
         </div>
       </div>
 
       <div className="booking-section">
-        <button className="book-now-button" onClick={handleBookNow}>
+      <div className="buttons-container">
+        <Link to="/contact" className="book-now-button">
+          <Calendar size={20} />
           Book Now
-        </button>
-        <p className="booking-note">* Secure your adventure today with instant booking</p>
+        </Link>
+        <a href="tel:7536048161" className="call-now-button">
+          <Phone size={20} />
+          Call Now
+        </a>
       </div>
+      <p className="booking-note">* Secure your adventure today with instant booking</p>
+    </div>
     </div>
   );
 };

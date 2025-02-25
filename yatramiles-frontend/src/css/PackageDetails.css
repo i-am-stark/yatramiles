@@ -178,32 +178,81 @@
 .booking-section {
   margin-top: 3rem;
   text-align: center;
+  padding: 2.5rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border-radius: 1rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
-.book-now-button {
-  background-color: #0984e3;
+.buttons-container {
+  display: flex;
+  gap: 2rem; /* Increased space between buttons */
+  justify-content: center;
+  margin-bottom: 2rem; /* Increased space between buttons and text */
+}
+
+.book-now-button,
+.call-now-button {
+  background: linear-gradient(135deg, #0984e3 0%, #0061a8 100%);
   color: white;
   border: none;
-  padding: 1rem 3rem;
-  font-size: 1.25rem;
+  padding: 1rem 2.5rem;
+  font-size: 1.125rem;
   font-weight: 600;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem; /* More space between icon and text */
 }
 
-.book-now-button:hover {
-  background-color: #0061a8;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+.book-now-button:hover,
+.call-now-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 15px -3px rgba(9, 132, 227, 0.3);
+  background: linear-gradient(135deg, #0061a8 0%, #004c85 100%);
+}
+
+.book-now-button:active,
+.call-now-button:active {
+  transform: translateY(-1px);
 }
 
 .booking-note {
-  margin-top: 1rem;
-  color: #636e72;
-  font-size: 0.9rem;
+  margin-top: 2rem; /* More space between buttons and text */
+  margin-left: auto;
+  color: #64748b;
+  font-size: 1rem; /* Slightly larger for readability */
+  font-style: italic;
+  position: relative;
+  display: inline-block;
 }
 
+.booking-note::before {
+  content: "";
+  position: absolute;
+  bottom: -0.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #0984e3, transparent);
+}
+
+@media (max-width: 640px) {
+  .buttons-container {
+    flex-direction: column;
+    gap: 1.5rem; /* Increased gap between stacked buttons */
+  }
+  
+  .book-now-button,
+  .call-now-button {
+    width: 100%;
+    justify-content: center;
+  }
+}
 /* Loading State */
 .loading-state {
   display: flex;
