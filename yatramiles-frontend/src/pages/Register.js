@@ -23,7 +23,7 @@ const Register = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      await axios.post('http://147.93.103.220:5001/api/auth/register', formData);
+      await axios.post('https://api.yatramiles.in/api/auth/register', formData);
       setOtpSent(true);
       setError('');
     } catch (error) {
@@ -37,7 +37,7 @@ const Register = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      await axios.post('http://147.93.103.220:5001/api/auth/verify-otp', {
+      await axios.post('https://api.yatramiles.in/api/auth/verify-otp', {
         email: formData.email,
         otp,
       });

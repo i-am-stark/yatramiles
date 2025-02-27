@@ -13,7 +13,7 @@ const StaffTransactionsPage = () => {
   const fetchTransactions = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://147.93.103.220:5001/api/transactions', {
+      const response = await axios.get('https://api.yatramiles.in/api/transactions', {
         headers: { Authorization: `Bearer ${token}` },
       });
       setTransactions(response.data);
@@ -28,7 +28,7 @@ const StaffTransactionsPage = () => {
     if (window.confirm('Are you sure you want to delete this transaction?')) {
       try {
         const token = localStorage.getItem('token');
-        await axios.delete(`http://147.93.103.220:5001/api/transactions/${id}`, {
+        await axios.delete(`https://api.yatramiles.in/api/transactions/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setTransactions(transactions.filter((txn) => txn._id !== id));

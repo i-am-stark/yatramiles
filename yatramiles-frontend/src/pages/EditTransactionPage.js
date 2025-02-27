@@ -16,7 +16,7 @@ const EditTransactionPage = () => {
     const fetchTransaction = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get(`http://147.93.103.220:5001/api/transactions/${transactionId}`, {
+        const response = await axios.get(`https://api.yatramiles.in/api/transactions/${transactionId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setTransaction(response.data);
@@ -38,7 +38,7 @@ const EditTransactionPage = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.put(
-        `http://147.93.103.220:5001/api/transactions/${transactionId}`,
+        `https://api.yatramiles.in/api/transactions/${transactionId}`,
         { status },
         { headers: { Authorization: `Bearer ${token}` } }
       );

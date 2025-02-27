@@ -35,7 +35,7 @@ const ManagePackages = () => {
 
   const fetchPackages = async () => {
     try {
-      const response = await axios.get('http://147.93.103.220:5001/api/packages');
+      const response = await axios.get('https://api.yatramiles.in/api/packages');
       setPackages(response.data);
       // Initialize current image index for each package
       const indices = {};
@@ -98,7 +98,7 @@ const ManagePackages = () => {
         }
       }
 
-      await axios.post('http://147.93.103.220:5001/api/packages', formDataToSend, {
+      await axios.post('https://api.yatramiles.in/api/packages', formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`,
@@ -131,7 +131,7 @@ const ManagePackages = () => {
   const handleDelete = async (packageId) => {
     if (window.confirm('Are you sure you want to delete this package?')) {
       try {
-        await axios.delete(`http://147.93.103.220:5001/api/packages/${packageId}`, {
+        await axios.delete(`https://api.yatramiles.in/api/packages/${packageId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

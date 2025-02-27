@@ -15,7 +15,7 @@ const AllPackages = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const API_URL = process.env.REACT_APP_API_URL || 'http://147.93.103.220:5001';  // Use local or production API URL
+  const API_URL = process.env.REACT_APP_API_URL || 'https://api.yatramiles.in';  // Use local or production API URL
 
   const fetchPackages = async () => {
     setLoading(true);
@@ -214,7 +214,7 @@ const PackageCard = ({ pkg }) => {
         Customizable
       </span>
       <img
-        src={`http://147.93.103.220:5001/${pkg.images[currentImageIndex]}`}
+        src={`https://api.yatramiles.in/${pkg.images[currentImageIndex]}`}
         alt={pkg.name}
         style={{
           width: '100%',

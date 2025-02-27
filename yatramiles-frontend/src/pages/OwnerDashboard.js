@@ -21,13 +21,13 @@ const OwnerDashboard = () => {
       setLoading(true);
       const token = localStorage.getItem('token');
       const [packagesResponse, transactionsResponse, queriesResponse] = await Promise.all([
-        axios.get('http://147.93.103.220:5001/api/packages', {
+        axios.get('https://api.yatramiles.in/api/packages', {
           headers: { Authorization: `Bearer ${token}` },
         }),
-        axios.get('http://147.93.103.220:5001/api/transactions', {
+        axios.get('https://api.yatramiles.in/api/transactions', {
           headers: { Authorization: `Bearer ${token}` },
         }),
-        axios.get('http://147.93.103.220:5001/api/queries', {
+        axios.get('https://api.yatramiles.in/api/queries', {
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);
@@ -47,7 +47,7 @@ const OwnerDashboard = () => {
     if (window.confirm('Are you sure you want to delete this package?')) {
       try {
         const token = localStorage.getItem('token');
-        await axios.delete(`http://147.93.103.220:5001/api/packages/${id}`, {
+        await axios.delete(`https://api.yatramiles.in/api/packages/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setPackages(packages.filter((pkg) => pkg._id !== id));

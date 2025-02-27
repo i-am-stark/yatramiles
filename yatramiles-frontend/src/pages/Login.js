@@ -22,7 +22,7 @@ const Login = () => {
     setIsLoading(true);
     try {
       // Updated API endpoint
-      const response = await axios.post('http://147.93.103.220:5001/api/auth/login', formData);
+      const response = await axios.post('https://api.yatramiles.in/api/auth/login', formData);
       login(response.data.token);
       
       const tokenPayload = JSON.parse(atob(response.data.token.split('.')[1]));

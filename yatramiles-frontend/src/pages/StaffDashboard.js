@@ -29,7 +29,7 @@ const StaffDashboard = () => {
   const fetchTransactions = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://147.93.103.220:5001/api/transactions', {
+      const response = await axios.get('https://api.yatramiles.in/api/transactions', {
         headers: { Authorization: `Bearer ${token}` },
       });
       setTransactions(response.data);
@@ -60,7 +60,7 @@ const StaffDashboard = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.put(
-        `http://147.93.103.220:5001/api/transactions/${id}`,
+        `https://api.yatramiles.in/api/transactions/${id}`,
         { status: statusUpdate[id] },
         { headers: { Authorization: `Bearer ${token}` } }
       );

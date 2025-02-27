@@ -18,10 +18,10 @@ const CreateTransactionPage = () => {
       try {
         const token = localStorage.getItem('token');
         const [customersResponse, packagesResponse] = await Promise.all([
-          axios.get('http://147.93.103.220:5001/api/transactions/customers', {
+          axios.get('https://api.yatramiles.in/api/transactions/customers', {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get('http://147.93.103.220:5001/api/packages', {
+          axios.get('https://api.yatramiles.in/api/packages', {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);
@@ -46,7 +46,7 @@ const CreateTransactionPage = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.post(
-        'http://147.93.103.220:5001/api/transactions',
+        'https://api.yatramiles.in/api/transactions',
         formData,
         {
           headers: { Authorization: `Bearer ${token}` },

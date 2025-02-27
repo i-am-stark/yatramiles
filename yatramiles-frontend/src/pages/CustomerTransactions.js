@@ -8,7 +8,7 @@ const CustomerTransactions = () => {
     const fetchTransactions = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://147.93.103.220:5001/api/transactions', {
+        const response = await axios.get('https://api.yatramiles.in/api/transactions', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setTransactions(response.data);
