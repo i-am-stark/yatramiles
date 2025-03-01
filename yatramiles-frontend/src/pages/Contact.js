@@ -51,7 +51,7 @@ const Contact = () => {
 
     setIsSubmitting(true);
     try {
-      const response = await fetch('/api/queries', {
+      const response = await fetch('https://api.yatramiles.in/api/queries', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),

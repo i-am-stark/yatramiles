@@ -47,7 +47,9 @@ const ManageStaffPage = () => {
       fetchStaff();
       setNewStaff({ name: '', email: '', password: '' });
     } catch (error) {
-      toast.error('Failed to add staff member');
+      const errorMessage =
+      error.response?.data?.message || 'Failed to add staff.';
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }

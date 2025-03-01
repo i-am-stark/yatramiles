@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { Edit, Trash2, Eye, Plus, Loader, AlertCircle, Package, Users, Receipt, MessageCircle, TrendingUp, Calendar } from 'lucide-react';
+import { Edit, Trash2, Eye ,Plus, Loader, AlertCircle, Package, Users, Receipt, MessageCircle, TrendingUp, Calendar } from 'lucide-react';
 import './../css/OwnerDashboard.css';
 
 const OwnerDashboard = () => {
@@ -100,13 +100,13 @@ const OwnerDashboard = () => {
     {
       to: "/manage-packages",
       icon: Plus,
-      label: "New Package",
+      label: "Add New Package",
       color: "blue"
     },
     {
-      to: "/owner-transactions",
-      icon: Receipt,
-      label: "View Transactions",
+      to: "#",
+      icon: Plus,
+      label: "Add New Transaction/Query - In Progress",
       color: "green"
     },
     {
@@ -116,9 +116,21 @@ const OwnerDashboard = () => {
       color: "orange"
     },
     {
+      to: "/packages",
+      icon: Package,
+      label: "View All Packages",
+      color: "blue"
+    },
+    {
+      to: "/owner-transactions",
+      icon: Receipt,
+      label: "View All Transactions",
+      color: "green"
+    },
+    {
       to: "/queries",
       icon: MessageCircle,
-      label: "Handle Queries",
+      label: "View All Queries",
       color: "purple"
     }
   ];
@@ -162,54 +174,11 @@ const OwnerDashboard = () => {
       </div>
 
       <div className="dashboard-grid">
-        <div className="grid-item packages-section">
-          <div className="section-header">
-            <h2>Travel Packages</h2>
-            <Link to="/packages" className="view-all">View All</Link>
-          </div>
-          <div className="table-responsive">
-            <table>
-              <thead>
-                <tr>
-                  <th>Package Name</th>
-                  <th>Price</th>
-                  <th>Duration</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {packages.map((pkg) => (
-                  <tr key={pkg._id}>
-                    <td>{pkg.name}</td>
-                    <td>${pkg.price}</td>
-                    <td>{pkg.duration || 'Not specified'}</td>
-                    <td>
-                      <div className="action-buttons">
-                        <Link to={`/packages/${pkg._id}`} className="action-btn view">
-                          <Eye size={16} />
-                        </Link>
-                        <Link to={`/packages/edit/${pkg._id}`} className="action-btn edit">
-                          <Edit size={16} />
-                        </Link>
-                        <button
-                          className="action-btn delete"
-                          onClick={() => handleDeletePackage(pkg._id)}
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
+        
         <div className="grid-item transactions-section">
           <div className="section-header">
             <h2>Recent Transactions</h2>
-            <Link to="/transactions" className="view-all">View All</Link>
+            <Link to="/owner-transactions" className="view-all">View All</Link>
           </div>
           <div className="table-responsive">
             <table>
@@ -219,7 +188,7 @@ const OwnerDashboard = () => {
                   <th>Contact</th>
                   <th>Location</th>
                   <th>Status</th>
-                  <th>Revenue</th>
+                  <th>Handler</th>
                   <th></th>
                 </tr>
               </thead>
@@ -239,10 +208,10 @@ const OwnerDashboard = () => {
                         {txn.status}
                       </span>
                     </td>
-                    <td>${txn.totalRevenue || 'N/A'}</td>
+                    <td>{txn.staff?.name || 'Unassigned'}</td>
                     <td>
-                      <Link to={`/transactions/${txn._id}`} className="action-btn view">
-                        <Eye size={16} />
+                      <Link to={`/transactions/edit/${txn._id}`} className="action-btn view">
+                        <Edit size={16} />
                       </Link>
                     </td>
                   </tr>
@@ -287,8 +256,8 @@ const OwnerDashboard = () => {
                     </td>
                     <td>{query.handler?.name || 'Unassigned'}</td>
                     <td>
-                      <Link to={`/queries/${query._id}`} className="action-btn view">
-                        <Eye size={16} />
+                      <Link to={`/queries/edit/${query._id}`} className="action-btn view">
+                        <Edit size={16} />
                       </Link>
                     </td>
                   </tr>
